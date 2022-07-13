@@ -1,7 +1,5 @@
 # Authsignal Server Ruby SDK
 
-# Authsignal Browser Javascript SDK
-
 **[Authsignal](https://www.authsignal.com/?utm_source=github&utm_medium=ruby_sdk) provides passwordless step up authentication (Multi-factor Authentication - MFA) that can be placed anywhere within your application. Authsignal also provides a no-code fraud risk rules engine to manage when step up challenges are triggered.**
 
 ## Installation
@@ -79,7 +77,7 @@ Call get action after a challenge is completed by the user, after a redirect or 
 
 ```ruby
 response = Authsignal.get_action(
-    user_id: 1,
+    user_id: current_user.id,
     action_code: "testAction",
     idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
 
