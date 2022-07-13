@@ -34,17 +34,19 @@ end
 Authsignal's server side signal API has four main calls `track_action`, `get_action`, `get_user`, `identify`, . These examples are assuming that the SDK is being called from a Ruby on Rails app, adapt depending on your framework.
 
 ### Track Action
+The track action call is the main api call to send actions to authsignal, the default decision is to `ALLOW` actions, this allows you to call track action as a means to keep an audit trail of your user activity. Add to the rules in the admin portal or the default decion to influence the flows for your end users. If a user is not enrolled with authenticators, the default decision is to `ALLOW`.
+
 ```ruby
 response = Authsignal.track_action({
         # OPTIONAL: The Authsignal cookie available when using the authsignal browser Javascript SDK
         # you could you use own device/session/fingerprinting identifiers.
-        authsignal_cookie = auth.request.cookies["__as_aid"]
+        authsignal_cookie = request.cookies["__as_aid"]
 
         # OPTIONAL: The idempotencyKey is a unique identifier per track action, this could be for a unique object associated to your application, like a shopping cart check out id
         # If ommitted, Authsignal will generate the idempotencyKey on the response
         idempotency_key = SecureRandom.uuid
 
-        # OPTIONAL: If you're using a redirect flow, set the redirect URL, this is the url authsgnal will redirect to after a Challenge is completed.
+        # OPTIONAL: If you're using a redirect flow, set the redirect URL, this is the url authsignal will redirect to after a Challenge is completed.
         redirect_url = "https://www.yourapp.com/back_to_your_app"
 
         actionCode: "signIn",
