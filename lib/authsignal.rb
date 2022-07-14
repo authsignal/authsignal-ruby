@@ -22,14 +22,17 @@ module Authsignal
 
         def get_user(user_id)
             response = Client.new.get_user(user_id)
+            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
         def get_action(user_id:, action_code:, idempotency_key:)
             response = Client.new.get_action(user_id, action_code, idempotency_key)
+            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
         def identify(user_id:, user:)
             response = Client.new.identify(user_id, user)
+            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
         def track_action(event, options={})
@@ -43,10 +46,19 @@ module Authsignal
             else
                 puts("Track failure! #{response.response.inspect} #{response.body}")
             end
-            response
+            response.transform_keys { |key| underscore(key) }
         rescue => e
-            RuntimeError.new("Failed to track action")
+            RuntimeError.new("Failed to track action").transform_keys(&:to_sym)
             false
+        end
+
+        private
+        def underscore(key)
+            key.gsub(/::/, '/').
+            gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+            gsub(/([a-z\d])([A-Z])/,'\1_\2').
+            tr("-", "_").
+            downcase
         end
     end
 end

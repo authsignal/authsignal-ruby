@@ -74,14 +74,14 @@ response = Authsignal.track_action({
 *Response*
 ```ruby
 response = Authsignal.track_action({..})
-case response['state']
+case response[:state]
     when "ALLOW"
         # Carry on with your operation/business logic
     when "BLOCK"
         # Stop your operations
     when "CHALLENGE_REQUIRED"
          # Step up authentication required, redirect or pass the challengeUrl to the front end
-        response['challengeUrl']
+        response[:challenge_url]
 end
 ```
 
@@ -94,7 +94,7 @@ response = Authsignal.get_action(
     action_code: "testAction",
     idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
 
-if(response["state"] === "CHALLENGE_SUCCEEDED")
+if(response[:state] === "CHALLENGE_SUCCEEDED")
     # The user has successfully completed the challenge, and you should proceed with
     # the business logic
 end
@@ -106,8 +106,8 @@ Get user retrieves the current enrolment state of the user, use this call to red
 ```ruby
 response = Authsignal.get_user(current_user.id)
 
-is_enrolled = response["isEnrolled"]
-url = response["url"]
+is_enrolled = response[:is_enrolled]
+url = response[:url]
 ```
 
 ### Identify
