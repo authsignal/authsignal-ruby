@@ -55,18 +55,18 @@ response = Authsignal.track_action({
         # OPTIONAL: If you're using a redirect flow, set the redirect URL, this is the url authsignal will redirect to after a Challenge is completed.
         redirect_url = "https://www.yourapp.com/back_to_your_app"
 
-        actionCode: "signIn",
-        idempotencyKey: idempotency_key,
-        redirectUrl: redirect_url,
-        userId: current_user.id,
+        action_code: "signIn",
+        idempotency_key: idempotency_key,
+        redirect_url: redirect_url,
+        user_id: current_user.id,
         email: current_user.email,
-        deviceId: authsignal_cookie,
-        userAgent: request.user_agent,
-        ipAddress: request.ip,
+        device_id: authsignal_cookie,
+        user_agent: request.user_agent,
+        ip_address: request.ip,
         custom: {
-            anyCustomDataPoint: true,
-            itCouldBeAString: "test",
-            itCouldBeANumber: 400.00
+            it_could_be_a_bool: true,
+            it_could_be_a_string: "test",
+            it_could_be_a_number: 400.00
         }
     }
 )
@@ -122,10 +122,6 @@ Authsignal.identify(user_id: current_user.id, user: {email: "newemail@email.com"
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/authsignal-ruby.
 
 ## License
 
