@@ -33,6 +33,9 @@ module Authsignal
         end
 
         def track_action(event, options={})
+            raise ArgumentError, "Action Code is required" unless event[:actionCode].to_s.length > 0
+            raise ArgumentError, "User ID value" unless event[:userId].to_s.length > 0
+
             response = Client.new.track(event, options)
             success = response && response.success? # HTTParty doesn't like `.try`
             if success
@@ -42,7 +45,7 @@ module Authsignal
             end
             response
         rescue => e
-            Error.new("Failed to track action")
+            RuntimeError.new("Failed to track action")
             false
         end
     end
