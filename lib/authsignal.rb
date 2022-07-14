@@ -28,6 +28,10 @@ module Authsignal
             response = Client.new.get_action(user_id, action_code, idempotency_key)
         end
 
+        def identify(user_id:, user:)
+            response = Client.new.identify(user_id, user)
+        end
+
         def track_action(event, options={})
             response = Client.new.track(event, options)
             success = response && response.success? # HTTParty doesn't like `.try`

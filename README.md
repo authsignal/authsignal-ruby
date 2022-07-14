@@ -83,16 +83,25 @@ response = Authsignal.get_action(
     action_code: "testAction",
     idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
 
-if(response["state"]=== "CHALLENGE_SUCCEEDED")
+if(response["state"] === "CHALLENGE_SUCCEEDED")
     # The user has successfully completed the challenge, and you should proceed with
     # the business logic
 end
 ```
 
 ### Get User
-Get user retrieves the current enrolment state of the user, use this call to redirect users to the enrolment or management flows so that the user can do self service management of their authenticator factors,
+Get user retrieves the current enrolment state of the user, use this call to redirect users to the enrolment or management flows so that the user can do self service management of their authenticator factors. User the `url` in the response to either redirect or initiate the pop up client side flow.
 ```ruby
 response = Authsignal.get_user(current_user.id)
+
+is_enrolled = response["isEnrolled"]
+url = response["url"]
+```
+
+### Identify
+Get identify to link and update additional user indetifiers (like email) to the primary record.
+```ruby
+Authsignal.identify(user_id: current_user.id, user: {email: "newemail@email.com"})
 ```
 
 ## Development

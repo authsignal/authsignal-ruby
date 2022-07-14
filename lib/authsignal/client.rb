@@ -24,8 +24,7 @@ module Authsignal
             userId = ERB::Util.url_encode(action[:userId])
             body = action.except(:userId, :actionCode)
             path = "/users/#{userId}/actions/#{actionCode}"
-            puts path
-            puts body
+
             post(path, query: options, body: JSON.generate(body))
         end
 
@@ -35,6 +34,10 @@ module Authsignal
 
         def get_action(user_id, action_code, idempotency_key)
             get("/users/#{ERB::Util.url_encode(user_id)}/actions/#{action_code}/#{ERB::Util.url_encode(idempotency_key)}")
+        end
+
+        def identify(user_id, user_payload)
+            post("/users/#{ERB::Util.url_encode(user_id)}", body: JSON.generate(user_payload))
         end
 
         def get(path, query: {})
