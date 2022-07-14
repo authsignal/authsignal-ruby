@@ -34,7 +34,9 @@ end
 Authsignal's server side signal API has four main calls `track_action`, `get_action`, `get_user`, `identify`, . These examples are assuming that the SDK is being called from a Ruby on Rails app, adapt depending on your framework.
 
 ### Track Action
-The track action call is the main api call to send actions to authsignal, the default decision is to `ALLOW` actions, this allows you to call track action as a means to keep an audit trail of your user activity. Add to the rules in the admin portal or the default decion to influence the flows for your end users. If a user is not enrolled with authenticators, the default decision is to `ALLOW`.
+The track action call is the main api call to send actions to authsignal, the default decision is to `ALLOW` actions, this allows you to call track action as a means to keep an audit trail of your user activity.
+
+Add to the rules in the admin portal or the change default decision to influence the flows for your end users. If a user is not enrolled with authenticators, the default decision is to `ALLOW`.
 
 ```ruby
 response = Authsignal.track_action({
@@ -91,6 +93,7 @@ end
 
 ### Get User
 Get user retrieves the current enrolment state of the user, use this call to redirect users to the enrolment or management flows so that the user can do self service management of their authenticator factors. User the `url` in the response to either redirect or initiate the pop up client side flow.
+
 ```ruby
 response = Authsignal.get_user(current_user.id)
 
