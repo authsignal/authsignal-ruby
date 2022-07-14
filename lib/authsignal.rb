@@ -36,8 +36,10 @@ module Authsignal
         end
 
         def track_action(event, options={})
-            raise ArgumentError, "Action Code is required" unless event[:actionCode].to_s.length > 0
-            raise ArgumentError, "User ID value" unless event[:userId].to_s.length > 0
+            raise ArgumentError, "Action Code is required" unless event[:action_code].to_s.length > 0
+            raise ArgumentError, "User ID value" unless event[:user_id].to_s.length > 0
+
+            event = event.transform_keys { |key| camelize(key) }
 
             response = Client.new.track(event, options)
             success = response && response.success? # HTTParty doesn't like `.try`
@@ -46,19 +48,25 @@ module Authsignal
             else
                 puts("Track failure! #{response.response.inspect} #{response.body}")
             end
-            response.transform_keys { |key| underscore(key) }
+            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         rescue => e
-            RuntimeError.new("Failed to track action").transform_keys(&:to_sym)
+            RuntimeError.new("Failed to track action")
             false
         end
 
         private
-        def underscore(key)
-            key.gsub(/::/, '/').
+        def underscore(string)
+            string.gsub(/::/, '/').
             gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
             gsub(/([a-z\d])([A-Z])/,'\1_\2').
             tr("-", "_").
             downcase
+        end
+
+        def camelize(symbol)
+            string = symbol.to_s
+            string = string.sub(/^(?:(?=\b|[A-Z_])|\w)/) { |match| match.downcase }
+            string.gsub(/(?:_|(\/))([a-z\d]*)/) { "#{$1}#{$2.capitalize}" }.gsub("/", "::").to_sym
         end
     end
 end
