@@ -1,6 +1,6 @@
 # Authsignal Server Ruby SDK
 
-**[Authsignal](https://www.authsignal.com/?utm_source=github&utm_medium=ruby_sdk) provides passwordless step up authentication (Multi-factor Authentication - MFA) that can be placed anywhere within your application. Authsignal also provides a no-code fraud risk rules engine to manage when step up challenges are triggered.**
+[Authsignal](https://www.authsignal.com/?utm_source=github&utm_medium=ruby_sdk) provides passwordless step up authentication (Multi-factor Authentication - MFA) that can be placed anywhere within your application. Authsignal also provides a no-code fraud risk rules engine to manage when step up challenges are triggered.
 
 ## Installation
 
@@ -31,7 +31,9 @@ end
 
 ## Usage
 
-Authsignal's server side signal API has four main calls `track_action`, `get_action`, `get_user`, `identify`, . These examples are assuming that the SDK is being called from a Ruby on Rails app, adapt depending on your framework.
+Authsignal's server side signal API has four main calls `track_action`, `get_action`, `get_user`, `identify`
+
+These examples assume that the SDK is being called from a Ruby on Rails app, adapt depending on your server framework.
 
 ### Track Action
 The track action call is the main api call to send actions to authsignal, the default decision is to `ALLOW` actions, this allows you to call track action as a means to keep an audit trail of your user activity.
@@ -60,7 +62,12 @@ response = Authsignal.track_action({
         email: current_user.email,
         deviceId: authsignal_cookie,
         userAgent: request.user_agent,
-        ipAddress: request.ip
+        ipAddress: request.ip,
+        custom: {
+            anyCustomDataPoint: true,
+            itCouldBeAString: "test",
+            itCouldBeANumber: 400.00
+        }
     }
 )
 ```
@@ -105,6 +112,7 @@ url = response["url"]
 
 ### Identify
 Get identify to link and update additional user indetifiers (like email) to the primary record.
+
 ```ruby
 Authsignal.identify(user_id: current_user.id, user: {email: "newemail@email.com"})
 ```
