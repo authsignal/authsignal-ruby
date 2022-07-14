@@ -75,13 +75,13 @@ response = Authsignal.track_action({
 ```ruby
 response = Authsignal.track_action({..})
 case response[:state]
-    when "ALLOW"
-        # Carry on with your operation/business logic
-    when "BLOCK"
-        # Stop your operations
-    when "CHALLENGE_REQUIRED"
-         # Step up authentication required, redirect or pass the challengeUrl to the front end
-        response[:challenge_url]
+when "ALLOW"
+    # Carry on with your operation/business logic
+when "BLOCK"
+    # Stop your operations
+when "CHALLENGE_REQUIRED"
+    # Step up authentication required, redirect or pass the challengeUrl to the front end
+    response[:challenge_url]
 end
 ```
 
