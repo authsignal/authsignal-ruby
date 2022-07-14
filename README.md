@@ -41,20 +41,20 @@ The track action call is the main api call to send actions to authsignal, the de
 Add to the rules in the admin portal or the change default decision to influence the flows for your end users. If a user is not enrolled with authenticators, the default decision is to `ALLOW`.
 
 ```ruby
+# OPTIONAL: The Authsignal cookie available when using the authsignal browser Javascript SDK
+# you could you use own device/session/fingerprinting identifiers.
+authsignal_cookie = request.cookies["__as_aid"]
+
+# OPTIONAL: The idempotencyKey is a unique identifier per track action
+# this could be for a unique object associated to your application
+# like a shopping cart check out id
+# If ommitted, Authsignal will generate the idempotencyKey and return in the response
+idempotency_key = SecureRandom.uuid
+
+# OPTIONAL: If you're using a redirect flow, set the redirect URL, this is the url authsignal will redirect to after a Challenge is completed.
+redirect_url = "https://www.yourapp.com/back_to_your_app"
+
 response = Authsignal.track_action({
-        # OPTIONAL: The Authsignal cookie available when using the authsignal browser Javascript SDK
-        # you could you use own device/session/fingerprinting identifiers.
-        authsignal_cookie = request.cookies["__as_aid"]
-
-        # OPTIONAL: The idempotencyKey is a unique identifier per track action
-        # this could be for a unique object associated to your application
-        # like a shopping cart check out id
-        # If ommitted, Authsignal will generate the idempotencyKey and return in the response
-        idempotency_key = SecureRandom.uuid
-
-        # OPTIONAL: If you're using a redirect flow, set the redirect URL, this is the url authsignal will redirect to after a Challenge is completed.
-        redirect_url = "https://www.yourapp.com/back_to_your_app"
-
         action_code: "signIn",
         idempotency_key: idempotency_key,
         redirect_url: redirect_url,
