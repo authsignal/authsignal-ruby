@@ -44,8 +44,10 @@ response = Authsignal.track_action({
         # you could you use own device/session/fingerprinting identifiers.
         authsignal_cookie = request.cookies["__as_aid"]
 
-        # OPTIONAL: The idempotencyKey is a unique identifier per track action, this could be for a unique object associated to your application, like a shopping cart check out id
-        # If ommitted, Authsignal will generate the idempotencyKey on the response
+        # OPTIONAL: The idempotencyKey is a unique identifier per track action
+        # this could be for a unique object associated to your application
+        # like a shopping cart check out id
+        # If ommitted, Authsignal will generate the idempotencyKey and return in the response
         idempotency_key = SecureRandom.uuid
 
         # OPTIONAL: If you're using a redirect flow, set the redirect URL, this is the url authsignal will redirect to after a Challenge is completed.
