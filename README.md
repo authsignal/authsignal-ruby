@@ -7,7 +7,7 @@
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'authsignal-ruby'
+gem "authsignal-ruby"
 ```
 
 And then execute:
@@ -25,7 +25,7 @@ In Ruby on Rails, you would typically place this code block in a file like `conf
 
 ```ruby
 Authsignal.setup do |config|
-    config.api_secret_key = ENV['AUTHSIGNAL_SECRET_KEY']
+    config.api_secret_key = ENV["AUTHSIGNAL_SECRET_KEY"]
 end
 ```
 
@@ -86,7 +86,7 @@ end
 ```
 
 ### Get Action
-Call get action after a challenge is completed by the user, after a redirect or a succesfull browser challenge pop-up flow, to decide whether to proceed with your operation
+Call get action after a challenge is completed by the user, after a redirect or a succesful browser challenge pop-up flow, and if the state of the action is `CHALLENGE_SUCCEEDED` you can proceed with completing the business logic.
 
 ```ruby
 response = Authsignal.get_action(
