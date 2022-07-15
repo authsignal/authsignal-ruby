@@ -20,8 +20,8 @@ module Authsignal
             configuration.defaults
         end
 
-        def get_user(user_id)
-            response = Client.new.get_user(user_id)
+        def get_user(user_id:, redirect_url: nil)
+            response = Client.new.get_user(user_id: user_id, redirect_url: redirect_url)
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 

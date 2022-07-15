@@ -28,8 +28,13 @@ module Authsignal
             post(path, query: options, body: JSON.generate(body))
         end
 
-        def get_user(user_id)
-            get("/users/#{ERB::Util.url_encode(user_id)}")
+        def get_user(user_id:, redirect_url: nil)
+            if(redirect_url)
+                path = "/users/#{ERB::Util.url_encode(user_id)}?redirectUrl=#{redirect_url}"
+            else
+                path = "/users/#{ERB::Util.url_encode(user_id)}"
+            end
+            get(path)
         end
 
         def get_action(user_id, action_code, idempotency_key)
