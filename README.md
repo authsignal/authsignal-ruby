@@ -104,7 +104,7 @@ end
 Get user retrieves the current enrolment state of the user, use this call to redirect users to the enrolment or management flows so that the user can do self service management of their authenticator factors. User the `url` in the response to either redirect or initiate the pop up client side flow.
 
 ```ruby
-response = Authsignal.get_user(current_user.id)
+response = Authsignal.get_user(user_id: current_user.id, redirect_url: "http://www.yourapp.com/path-back")
 
 is_enrolled = response[:is_enrolled]
 url = response[:url]
