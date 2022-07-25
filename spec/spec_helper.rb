@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require "authsignal"
+require 'webmock/rspec'
+
+WebMock.disable_net_connect!()
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

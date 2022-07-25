@@ -35,6 +35,19 @@ module Authsignal
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
+        def enrol_authenticator(user_id:, authenticator:)
+            authenticator = authenticator.transform_keys { |key| camelize(key) }
+            response = Client.new.enrol_authenticator(user_id, authenticator)
+            
+            if response["authenticator"]
+                response["authenticator"] = response["authenticator"].transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
+            end
+
+            response = response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
+
+            response
+        end
+
         def track_action(event, options={})
             raise ArgumentError, "Action Code is required" unless event[:action_code].to_s.length > 0
             raise ArgumentError, "User ID value" unless event[:user_id].to_s.length > 0
@@ -42,12 +55,13 @@ module Authsignal
             event = event.transform_keys { |key| camelize(key) }
 
             response = Client.new.track(event, options)
-            success = response && response.success? # HTTParty doesn't like `.try`
+            success = response && response.success?
             if success
                 puts("Tracked event! #{response.response.inspect}")
             else
                 puts("Track failure! #{response.response.inspect} #{response.body}")
             end
+
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         rescue => e
             RuntimeError.new("Failed to track action")
