@@ -114,7 +114,14 @@ url = response[:url]
 Get identify to link and update additional user indetifiers (like email) to the primary record.
 
 ```ruby
-Authsignal.identify(user_id: current_user.id, user: {email: "newemail@email.com"})
+Authsignal.identify(user_id: current_user.id, user: { email: "newemail@email.com" })
+```
+
+### Enrol Authenticator
+If your application already has a valid authenticator like a validated phone number for your customer, you can enrol the authenticator on behalf of the user using this function
+
+```ruby
+Authsignal.enrol_authenticator(user_id: current_user.id, authenticator:{ oob_channel: "SMS", phone_number: "+64270000000" })
 ```
 
 ## Development

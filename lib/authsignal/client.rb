@@ -45,6 +45,10 @@ module Authsignal
             post("/users/#{ERB::Util.url_encode(user_id)}", body: JSON.generate(user_payload))
         end
 
+        def enrol_authenticator(user_id, authenticator)
+            post("/users/#{ERB::Util.url_encode(user_id)}/authenticators", body: JSON.generate(authenticator))
+        end
+
         def get(path, query: {})
             self.class.get(path, headers: @headers, basic_auth: {username: @api_key})
         end
