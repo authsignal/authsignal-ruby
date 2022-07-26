@@ -27,6 +27,51 @@ RSpec.describe Authsignal do
     end
   end
 
+  describe "identify" do
+    it do
+      stub_request(:post, "http://localhost:8080/users/1")
+          .with(basic_auth: ['secret', ''])
+          .with(body: "{\"email\":\"test@example.com\"}")
+          .to_return(body: {userId: 1, email: "test@example.com"}.to_json,
+                    status: 200,
+                    headers: {'Content-Type' => 'application/json'})
+        
+      response = Authsignal.identify(user_id: 1, user: { email: "test@example.com"})
+
+      expect(response[:user_id]).to eq(1)
+      expect(response[:email]).to eq("test@example.com")
+    end
+  end
+
+  describe "enrol_authenticator" do
+    it do
+      payload = {
+        authenticator: {
+          userAuthenticatorId: "9b2cfd40-7df2-4658-852d-a0c3456e5a2e",
+          authenticatorType: "OOB",
+          isDefault: true,
+          phoneNumber: "+64270000000",
+          createdAt: "2022-07-25T03:31:36.219Z",
+          oobChannel: "SMS"
+        },
+        recoveryCodes: ["xxxx"]
+      }
+
+      stub_request(:post, "http://localhost:8080/users/1/authenticators")
+          .with(basic_auth: ['secret', ''])
+          .with(body: "{\"oobChannel\":\"SMS\",\"phoneNumber\":\"+64270000000\"}")
+          .to_return(body: payload.to_json,
+                    status: 200,
+                    headers: {'Content-Type' => 'application/json'})
+        
+      response = Authsignal.enrol_authenticator(user_id: 1,
+                    authenticator:{ oob_channel: "SMS",
+                      phone_number: "+64270000000" })
+
+      expect(response[:authenticator][:user_authenticator_id]).to eq("9b2cfd40-7df2-4658-852d-a0c3456e5a2e")
+    end
+  end
+
   describe "track_action" do
     it do 
       stub_request(:post, "http://localhost:8080/users/123/actions/signIn")
@@ -54,6 +99,25 @@ RSpec.describe Authsignal do
       
       expect(response[:state]).to eq("ALLOW")
       expect(response[:idempotency_key]).to eq("f7f6ff4c-600f-4d61-99a2-b1157fe43777")
+    end
+  end
+
+  describe "get_action" do
+    it do
+      stub_request(:get, "http://localhost:8080/users/1/actions/testAction/15cac140-f639-48c5-92db-835ec8d3d144")
+          .with(basic_auth: ['secret', ''])
+          .to_return(body: {state: "ALLOW", ruleIds: [], stateUpdatedAt: "2022-07-25T03:19:00.316Z", createdAt: "2022-07-25T03:19:00.316Z"}.to_json,
+                    status: 200,
+                    headers: {'Content-Type' => 'application/json'})
+        
+      response = Authsignal.get_action(
+        user_id: 1,
+        action_code: "testAction",
+        idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
+    
+
+      expect(response[:state]).to eq("ALLOW")
+      expect(response[:state_updated_at]).to eq("2022-07-25T03:19:00.316Z")
     end
   end
 end
