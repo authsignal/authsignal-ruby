@@ -1,5 +1,6 @@
 require "httparty"
 
+require "authsignal/version"
 require "authsignal/client"
 require "authsignal/configuration"
 
