@@ -94,7 +94,7 @@ response = Authsignal.get_action(
     action_code: "testAction",
     idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
 
-if(response[:state] === "CHALLENGE_SUCCEEDED")
+if(response[:state] == "CHALLENGE_SUCCEEDED")
     # The user has successfully completed the challenge, and you should proceed with
     # the business logic
 end
