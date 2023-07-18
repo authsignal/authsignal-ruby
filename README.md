@@ -37,8 +37,8 @@ You must specify the correct `baseUrl` for your tenant's region.
 | Region      | Base URL                            |
 | ----------- | ----------------------------------- |
 | US (Oregon) | https://signal.authsignal.com/v1    |
-| AU (Sydney) | https://au-signal.authsignal.com/v1 |
-| EU (Dublin) | https://eu-signal.authsignal.com/v1 |
+| AU (Sydney) | https://au.signal.authsignal.com/v1 |
+| EU (Dublin) | https://eu.signal.authsignal.com/v1 |
 
 For example, to set the base URL to use our AU region:
 
