@@ -34,11 +34,11 @@ You can find your `api_secret_key` in the [Authsignal Portal](https://portal.aut
 
 You must specify the correct `baseUrl` for your tenant's region.
 
-| Region      | Base URL                               |
-| ----------- | -------------------------------------- |
-| US (Oregon) | https://challenge.authsignal.com/v1    |
-| AU (Sydney) | https://au-challenge.authsignal.com/v1 |
-| EU (Dublin) | https://eu-challenge.authsignal.com/v1 |
+| Region      | Base URL                            |
+| ----------- | ----------------------------------- |
+| US (Oregon) | https://signal.authsignal.com/v1    |
+| AU (Sydney) | https://au-signal.authsignal.com/v1 |
+| EU (Dublin) | https://eu-signal.authsignal.com/v1 |
 
 For example, to set the base URL to use our AU region:
 
