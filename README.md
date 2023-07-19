@@ -1,6 +1,6 @@
 # Authsignal Server Ruby SDK
 
-[Authsignal](https://www.authsignal.com/?utm_source=github&utm_medium=ruby_sdk) provides passwordless step up authentication (Multi-factor Authentication - MFA) that can be placed anywhere within your application. Authsignal also provides a no-code fraud risk rules engine to manage when step up challenges are triggered.
+Check out our [official Ruby SDK documentation](https://docs.authsignal.com/sdks/server/ruby), and [Ruby on Rails Quickstart Guide](https://docs.authsignal.com/quickstarts/ruby-on-rails).
 
 ## Installation
 
@@ -18,7 +18,8 @@ Or install it yourself as:
 
     $ gem install authsignal-ruby
 
-## Configuration
+## Initialization
+
 Initialize the Authsignal Ruby SDK, ensuring you do not hard code the Authsignal Secret Key, always keep this safe.
 
 In Ruby on Rails, you would typically place this code block in a file like `config/initializers/authsignal.rb`
@@ -29,100 +30,32 @@ Authsignal.setup do |config|
 end
 ```
 
+You can find your `api_secret_key` in the [Authsignal Portal](https://portal.authsignal.com/organisations/tenants/api).
+
+You must specify the correct `baseUrl` for your tenant's region.
+
+| Region      | Base URL                            |
+| ----------- | ----------------------------------- |
+| US (Oregon) | https://signal.authsignal.com/v1    |
+| AU (Sydney) | https://au.signal.authsignal.com/v1 |
+| EU (Dublin) | https://eu.signal.authsignal.com/v1 |
+
+For example, to set the base URL to use our AU region:
+
+```
+require 'authsignal'
+
+Authsignal.setup do |config|
+    config.api_secret_key = ENV["AUTHSIGNAL_SECRET_KEY"]
+    config.base_uri = "https://au.signal.authsignal.com/v1"
+end
+```
+
 ## Usage
 
-Authsignal's server side signal API has four main calls `track_action`, `get_action`, `get_user`, `identify`
+Authsignal's server side signal API has four main api calls `track_action`, `get_action`, `get_user`, `enrol_authenticator`.
 
-These examples assume that the SDK is being called from a Ruby on Rails app, adapt depending on your server framework.
-
-### Track Action
-The track action call is the main api call to send actions to authsignal, the default decision is to `ALLOW` actions, this allows you to call track action as a means to keep an audit trail of your user activity.
-
-Add to the rules in the admin portal or the change default decision to influence the flows for your end users. If a user is not enrolled with authenticators, the default decision is to `ALLOW`.
-
-```ruby
-# OPTIONAL: The Authsignal cookie available when using the authsignal browser Javascript SDK
-# you could you use own device/session/fingerprinting identifiers.
-authsignal_cookie = request.cookies["__as_aid"]
-
-# OPTIONAL: The idempotencyKey is a unique identifier per track action
-# this could be for a unique object associated to your application
-# like a shopping cart check out id
-# If ommitted, Authsignal will generate the idempotencyKey and return in the response
-idempotency_key = SecureRandom.uuid
-
-# OPTIONAL: If you're using a redirect flow, set the redirect URL, this is the url authsignal will redirect to after a Challenge is completed.
-redirect_url = "https://www.yourapp.com/back_to_your_app"
-
-response = Authsignal.track_action({
-        action_code: "signIn",
-        idempotency_key: idempotency_key,
-        redirect_url: redirect_url,
-        user_id: current_user.id,
-        email: current_user.email,
-        device_id: authsignal_cookie,
-        user_agent: request.user_agent,
-        ip_address: request.ip,
-        custom: {
-            it_could_be_a_bool: true,
-            it_could_be_a_string: "test",
-            it_could_be_a_number: 400.00
-        }
-    }
-)
-```
-*Response*
-```ruby
-response = Authsignal.track_action({..})
-case response[:state]
-when "ALLOW"
-    # Carry on with your operation/business logic
-when "BLOCK"
-    # Stop your operations
-when "CHALLENGE_REQUIRED"
-    # Step up authentication required, redirect or pass the challengeUrl to the front end
-    response[:challenge_url]
-end
-```
-
-### Get Action
-Call get action after a challenge is completed by the user, after a redirect or a succesful browser challenge pop-up flow, and if the state of the action is `CHALLENGE_SUCCEEDED` you can proceed with completing the business logic.
-
-```ruby
-response = Authsignal.get_action(
-    user_id: current_user.id,
-    action_code: "testAction",
-    idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
-
-if(response[:state] == "CHALLENGE_SUCCEEDED")
-    # The user has successfully completed the challenge, and you should proceed with
-    # the business logic
-end
-```
-
-### Get User
-Get user retrieves the current enrolment state of the user, use this call to redirect users to the enrolment or management flows so that the user can do self service management of their authenticator factors. User the `url` in the response to either redirect or initiate the pop up client side flow.
-
-```ruby
-response = Authsignal.get_user(user_id: current_user.id, redirect_url: "http://www.yourapp.com/path-back")
-
-is_enrolled = response[:is_enrolled]
-url = response[:url]
-```
-
-### Identify
-Get identify to link and update additional user indetifiers (like email) to the primary record.
-
-```ruby
-Authsignal.identify(user_id: current_user.id, user: { email: "newemail@email.com" })
-```
-
-### Enrol Authenticator
-If your application already has a valid authenticator like a validated phone number for your customer, you can enrol the authenticator on behalf of the user using this function
-
-```ruby
-Authsignal.enrol_authenticator(user_id: current_user.id, authenticator:{ oob_channel: "SMS", phone_number: "+64270000000" })
-```
+For more details on these api calls, refer to our [official Ruby SDK docs](https://docs.authsignal.com/sdks/server/ruby#track_action).
 
 ## Development
 
