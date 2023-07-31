@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "httparty", "~> 0.20.0"
+  spec.add_dependency "httparty", "~> 0.21.0"
   spec.add_development_dependency "rspec", "~> 3.2"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "webmock", "~> 3.14.0"
