@@ -69,6 +69,35 @@ module Authsignal
             false
         end
 
+        def validate_challenge(request)
+            token = request[:token]
+          
+            jwt.verify(token, @secret)
+          
+            decoded_token = jwt.decode(token, RedirectTokenPayload)
+          
+            userId = decoded_token[:other][:userId]
+            action = decoded_token[:other][:actionCode]
+            idempotencyKey = decoded_token[:other][:idempotencyKey]
+          
+            if request[:userId] && request[:userId] != userId
+              return { userId: userId, success: false, state: nil }
+            end
+          
+            if action && idempotencyKey
+              action_result = get_action(userId, action, idempotencyKey)
+          
+              if action_result
+                state = action_result[:state]
+                success = state == UserActionState::CHALLENGE_SUCCEEDED
+          
+                return { userId: userId, success: success, state: state, action: action }
+              end
+            end
+          
+            { userId: userId, success: false, state: nil }
+          end
+
         private
         def underscore(string)
             string.gsub(/::/, '/').
