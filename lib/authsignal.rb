@@ -71,31 +71,34 @@ module Authsignal
 
         def validate_challenge(request)
             token = request[:token]
-          
-            jwt.verify(token, @secret)
-          
-            decoded_token = jwt.decode(token, RedirectTokenPayload)
-          
-            userId = decoded_token[:other][:userId]
-            action = decoded_token[:other][:actionCode]
-            idempotencyKey = decoded_token[:other][:idempotencyKey]
-          
-            if request[:userId] && request[:userId] != userId
-              return { userId: userId, success: false, state: nil }
+
+            begin
+                decoded_token = JWT.decode(token, Authsignal.configuration.api_secret_key)[0]
+            rescue JWT::DecodeError
+                # Handle the decode error here
+                puts 'Token verification failed'
             end
           
-            if action && idempotencyKey
-              action_result = get_action(userId, action, idempotencyKey)
+            user_id = decoded_token["other"]["userId"]
+            action_code = decoded_token["other"]["actionCode"]
+            idempotency_key = decoded_token["other"]["idempotencyKey"]
+          
+            if request[:userId] && request[:userId] != user_id
+              return { user_id: user_id, success: false, state: nil }
+            end
+
+            if action_code && idempotency_key
+              action_result = get_action(user_id: user_id, action_code: action_code, idempotency_key: idempotency_key)
           
               if action_result
                 state = action_result[:state]
-                success = state == UserActionState::CHALLENGE_SUCCEEDED
+                success = state == "CHALLENGE_SUCCEEDED"
           
-                return { userId: userId, success: success, state: state, action: action }
+                return { user_id: user_id, success: success, state: state, action: action_code }
               end
             end
           
-            { userId: userId, success: false, state: nil }
+            { user_id: user_id, success: false, state: nil }
           end
 
         private
