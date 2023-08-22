@@ -75,7 +75,6 @@ module Authsignal
             begin
                 decoded_token = JWT.decode(token, Authsignal.configuration.api_secret_key)[0]
             rescue JWT::DecodeError
-                # Handle the decode error here
                 puts 'Token verification failed'
             end
           
