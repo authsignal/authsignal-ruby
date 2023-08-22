@@ -1,0 +1,15 @@
+# frozen_string_literal: true
+
+require "bundler/gem_tasks"
+require "rspec/core/rake_task"
+require_relative 'lib/authsignal/version'
+
+RSpec::Core::RakeTask.new(:spec)
+
+task default: :spec
+
+task :build_and_push_gem do
+  version = Authsignal::VERSION
+  sh "gem build authsignal-ruby.gemspec"
+  sh "gem push authsignal-ruby-#{version}.gem"
+end
