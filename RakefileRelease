@@ -4,12 +4,13 @@ require "bundler/gem_tasks"
 require "rspec/core/rake_task"
 require_relative 'lib/authsignal/version'
 
-RSpec::Core::RakeTask.new(:spec)
+task default: :build_and_push_gem
 
-task default: :spec
-
-task :build_and_push_gem do
+RSpec::Core::RakeTask.new(:build_and_push_gem) do |task|
   version = Authsignal::VERSION
+  puts "Building gem..."
   sh "gem build authsignal-ruby.gemspec"
+  puts "Pushing authsignal-ruby-#{version} gem..."
   sh "gem push authsignal-ruby-#{version}.gem"
+  puts "Gem authsignal-ruby-#{version} has been pushed."
 end
