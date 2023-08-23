@@ -10,6 +10,9 @@ task default: :spec
 
 task :build_and_push_gem do
   version = Authsignal::VERSION
+  puts "Building gem..."
   sh "gem build authsignal-ruby.gemspec"
+  puts "Pushing authsignal-ruby-#{version} gem..."
   sh "gem push authsignal-ruby-#{version}.gem"
+  puts "Gem authsignal-ruby-#{version} has been pushed."
 end
