@@ -69,35 +69,33 @@ module Authsignal
             false
         end
 
-        def validate_challenge(request)
-            token = request[:token]
-
+        def validate_challenge(user_id:, token:)
             begin
                 decoded_token = JWT.decode(token, Authsignal.configuration.api_secret_key)[0]
             rescue JWT::DecodeError
                 puts 'Token verification failed'
             end
           
-            user_id = decoded_token["other"]["userId"]
+            decoded_user_id = decoded_token["other"]["userId"]
             action_code = decoded_token["other"]["actionCode"]
             idempotency_key = decoded_token["other"]["idempotencyKey"]
           
-            if request[:userId] && request[:userId] != user_id
-              return { user_id: user_id, success: false, state: nil }
+            if  user_id != decoded_user_id
+              return { user_id: decoded_user_id, success: false, state: nil }
             end
 
             if action_code && idempotency_key
-              action_result = get_action(user_id: user_id, action_code: action_code, idempotency_key: idempotency_key)
+              action_result = get_action(user_id: decoded_user_id, action_code: action_code, idempotency_key: idempotency_key)
           
               if action_result
                 state = action_result[:state]
                 success = state == "CHALLENGE_SUCCEEDED"
           
-                return { user_id: user_id, success: success, state: state, action: action_code }
+                return { user_id: decoded_user_id, success: success, state: state, action: action_code }
               end
             end
           
-            { user_id: user_id, success: false, state: nil }
+            { user_id: decoded_user_id, success: false, state: nil }
           end
 
         private
