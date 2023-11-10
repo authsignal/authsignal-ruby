@@ -43,7 +43,7 @@ RSpec.describe Authsignal do
     end
   end
 
-  describe "enrol_authenticator" do
+  describe "enroll_verified_authenticator" do
     it do
       payload = {
         authenticator: {
@@ -64,7 +64,7 @@ RSpec.describe Authsignal do
                     status: 200,
                     headers: {'Content-Type' => 'application/json'})
         
-      response = Authsignal.enrol_authenticator(user_id: 1,
+      response = Authsignal.enroll_verified_authenticator(user_id: 1,
                     authenticator:{ oob_channel: "SMS",
                       phone_number: "+64270000000" })
 
