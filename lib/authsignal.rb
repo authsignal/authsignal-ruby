@@ -36,9 +36,9 @@ module Authsignal
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
-        def enrol_authenticator(user_id:, authenticator:)
+        def enroll_verified_authenticator(user_id:, authenticator:)
             authenticator = authenticator.transform_keys { |key| camelize(key) }
-            response = Client.new.enrol_authenticator(user_id, authenticator)
+            response = Client.new.enroll_verified_authenticator(user_id, authenticator)
             
             if response["authenticator"]
                 response["authenticator"] = response["authenticator"].transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
