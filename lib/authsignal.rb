@@ -51,7 +51,7 @@ module Authsignal
         end
 
         def track(event, options={})
-            raise ArgumentError, "Action Code is required" unless event[:action_code].to_s.length > 0
+            raise ArgumentError, "Action Code is required" unless event[:action].to_s.length > 0
             raise ArgumentError, "User ID value" unless event[:user_id].to_s.length > 0
 
             event = event.transform_keys { |key| camelize(key) }

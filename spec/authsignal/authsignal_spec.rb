@@ -81,7 +81,7 @@ RSpec.describe Authsignal do
         status: 200)
 
       response = Authsignal.track({
-                      action_code: "signIn",
+                      action: "signIn",
                       idempotency_key: "xxxx-xxxx",
                       redirect_url: "https://wwww.example.com",
                       user_id: "123",

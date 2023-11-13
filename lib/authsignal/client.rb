@@ -19,7 +19,7 @@ module Authsignal
         end
 
         def track(action, options = {})
-            actionCode = action[:actionCode]
+            actionCode = action[:action]
             idempotencyKey = ERB::Util.url_encode(action[:idempotencyKey])
             userId = ERB::Util.url_encode(action[:userId])
             body = action.except(:userId, :actionCode)
