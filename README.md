@@ -53,9 +53,9 @@ end
 
 ## Usage
 
-Authsignal's server side signal API has four main api calls `track_action`, `get_action`, `get_user`, `enroll_verified_authenticator`.
+Authsignal's server side signal API has four main api calls `track`, `get_action`, `get_user`, `enroll_verified_authenticator`.
 
-For more details on these api calls, refer to our [official Ruby SDK docs](https://docs.authsignal.com/sdks/server/ruby#track_action).
+For more details on these api calls, refer to our [official Ruby SDK docs](https://docs.authsignal.com/sdks/server/ruby#track).
 
 ## Development
 

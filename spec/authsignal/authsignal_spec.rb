@@ -72,7 +72,7 @@ RSpec.describe Authsignal do
     end
   end
 
-  describe "track_action" do
+  describe "track" do
     it do 
       stub_request(:post, "http://localhost:8080/users/123/actions/signIn")
         .with(basic_auth: ['secret', ''])
@@ -80,7 +80,7 @@ RSpec.describe Authsignal do
         headers: {'Content-Type' => 'application/json'},
         status: 200)
 
-      response = Authsignal.track_action({
+      response = Authsignal.track({
                       action_code: "signIn",
                       idempotency_key: "xxxx-xxxx",
                       redirect_url: "https://wwww.example.com",
