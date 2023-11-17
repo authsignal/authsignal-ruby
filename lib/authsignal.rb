@@ -76,7 +76,7 @@ module Authsignal
             action_code = decoded_token["other"]["actionCode"]
             idempotency_key = decoded_token["other"]["idempotencyKey"]
           
-            if  user_id != decoded_user_id
+            if user_id && user_id != decoded_user_id
               return { user_id: decoded_user_id, success: false, state: nil }
             end
 
