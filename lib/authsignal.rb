@@ -32,11 +32,6 @@ module Authsignal
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
-        def identify(user_id:, user:)
-            response = Client.new.identify(user_id, user)
-            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
-        end
-
         def enroll_verified_authenticator(user_id:, authenticator:)
             authenticator = authenticator.transform_keys { |key| camelize(key) }
             response = Client.new.enroll_verified_authenticator(user_id, authenticator)
