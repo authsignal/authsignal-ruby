@@ -19,7 +19,7 @@ module Authsignal
         end
 
         def track(action, options = {})
-            actionCode = action[:actionCode]
+            actionCode = action[:action]
             idempotencyKey = ERB::Util.url_encode(action[:idempotencyKey])
             userId = ERB::Util.url_encode(action[:userId])
             body = action.except(:userId, :actionCode)
@@ -45,7 +45,7 @@ module Authsignal
             post("/users/#{ERB::Util.url_encode(user_id)}", body: JSON.generate(user_payload))
         end
 
-        def enrol_authenticator(user_id, authenticator)
+        def enroll_verified_authenticator(user_id, authenticator)
             post("/users/#{ERB::Util.url_encode(user_id)}/authenticators", body: JSON.generate(authenticator))
         end
 

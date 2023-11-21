@@ -27,23 +27,7 @@ RSpec.describe Authsignal do
     end
   end
 
-  describe "identify" do
-    it do
-      stub_request(:post, "http://localhost:8080/users/1")
-          .with(basic_auth: ['secret', ''])
-          .with(body: "{\"email\":\"test@example.com\"}")
-          .to_return(body: {userId: 1, email: "test@example.com"}.to_json,
-                    status: 200,
-                    headers: {'Content-Type' => 'application/json'})
-        
-      response = Authsignal.identify(user_id: 1, user: { email: "test@example.com"})
-
-      expect(response[:user_id]).to eq(1)
-      expect(response[:email]).to eq("test@example.com")
-    end
-  end
-
-  describe "enrol_authenticator" do
+  describe "enroll_verified_authenticator" do
     it do
       payload = {
         authenticator: {
@@ -64,7 +48,7 @@ RSpec.describe Authsignal do
                     status: 200,
                     headers: {'Content-Type' => 'application/json'})
         
-      response = Authsignal.enrol_authenticator(user_id: 1,
+      response = Authsignal.enroll_verified_authenticator(user_id: 1,
                     authenticator:{ oob_channel: "SMS",
                       phone_number: "+64270000000" })
 
@@ -72,7 +56,7 @@ RSpec.describe Authsignal do
     end
   end
 
-  describe "track_action" do
+  describe "track" do
     it do 
       stub_request(:post, "http://localhost:8080/users/123/actions/signIn")
         .with(basic_auth: ['secret', ''])
@@ -80,8 +64,8 @@ RSpec.describe Authsignal do
         headers: {'Content-Type' => 'application/json'},
         status: 200)
 
-      response = Authsignal.track_action({
-                      action_code: "signIn",
+      response = Authsignal.track({
+                      action: "signIn",
                       idempotency_key: "xxxx-xxxx",
                       redirect_url: "https://wwww.example.com",
                       user_id: "123",
@@ -118,6 +102,57 @@ RSpec.describe Authsignal do
 
       expect(response[:state]).to eq("ALLOW")
       expect(response[:state_updated_at]).to eq("2022-07-25T03:19:00.316Z")
+    end
+  end
+
+  describe "validate_challenge" do
+    before do
+      stub_request(:get, "http://localhost:8080/users/legitimate_user_id/actions/alwaysChallenge/a682af7d-c929-4c29-9c2a-71e69ab5c603")
+      .with(basic_auth: ['secret', ''])
+      .to_return(body: {success: true, state: "CHALLENGE_SUCCEEDED", user_id: "legitimate_user_id", stateUpdatedAt: "2022-07-25T03:19:00.316Z", createdAt: "2022-07-25T03:19:00.316Z"}.to_json,
+                status: 200,
+                headers: {'Content-Type' => 'application/json'})
+    end
+
+    payload = { 
+      "iat": Time.now.to_i, 
+      "sub": "legitimate_user_id", 
+      "exp": Time.now.to_i + 10 * 60, 
+      "iss": "https://challenge.authsignal.com/555159e4-adc3-454b-82b1-b55a2783f712", 
+      "aud": "https://challenge.authsignal.com/555159e4-adc3-454b-82b1-b55a2783f712", 
+      "scope": "read:authenticators add:authenticators update:authenticators remove:authenticators", 
+      "other": { 
+        "tenantId": "555159e4-adc3-454b-82b1-b55a2783f712", 
+        "publishableKey": "2fff14a6600b7a58170793109c78b876", 
+        "userId": "legitimate_user_id", 
+        "actionCode": "alwaysChallenge", 
+        "idempotencyKey": "a682af7d-c929-4c29-9c2a-71e69ab5c603" 
+      } 
+    }
+
+    hmac_secret = 'secret'
+
+    token = JWT.encode payload, hmac_secret, 'HS256'
+
+    it "Checks that the challenge was successful when userId correct" do
+      response = Authsignal.validate_challenge(
+        user_id: "legitimate_user_id",
+        token: token,
+      )
+
+      expect(response[:user_id]).to eq("legitimate_user_id")
+      expect(response[:state]).to eq("CHALLENGE_SUCCEEDED")
+      expect(response[:success]).to eq(true)
+    end
+
+    it "Checks that success is false when userId is incorrect" do
+      response = Authsignal.validate_challenge(
+        user_id: "spoofed_user_id",
+        token: token,
+      )
+
+      expect(response[:state]).to eq(nil)
+      expect(response[:success]).to eq(false)
     end
   end
 end

@@ -1,4 +1,5 @@
 require "httparty"
+require 'jwt'
 
 require "authsignal/version"
 require "authsignal/client"
@@ -31,14 +32,9 @@ module Authsignal
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
-        def identify(user_id:, user:)
-            response = Client.new.identify(user_id, user)
-            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
-        end
-
-        def enrol_authenticator(user_id:, authenticator:)
+        def enroll_verified_authenticator(user_id:, authenticator:)
             authenticator = authenticator.transform_keys { |key| camelize(key) }
-            response = Client.new.enrol_authenticator(user_id, authenticator)
+            response = Client.new.enroll_verified_authenticator(user_id, authenticator)
             
             if response["authenticator"]
                 response["authenticator"] = response["authenticator"].transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
@@ -49,8 +45,8 @@ module Authsignal
             response
         end
 
-        def track_action(event, options={})
-            raise ArgumentError, "Action Code is required" unless event[:action_code].to_s.length > 0
+        def track(event, options={})
+            raise ArgumentError, "Action Code is required" unless event[:action].to_s.length > 0
             raise ArgumentError, "User ID value" unless event[:user_id].to_s.length > 0
 
             event = event.transform_keys { |key| camelize(key) }
@@ -80,7 +76,7 @@ module Authsignal
             action_code = decoded_token["other"]["actionCode"]
             idempotency_key = decoded_token["other"]["idempotencyKey"]
           
-            if  user_id != decoded_user_id
+            if user_id && user_id != decoded_user_id
               return { user_id: decoded_user_id, success: false, state: nil }
             end
 
