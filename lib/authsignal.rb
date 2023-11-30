@@ -65,7 +65,7 @@ module Authsignal
             false
         end
 
-        def validate_challenge(user_id: nil, token:)
+        def validate_challenge(token:, user_id: nil)
             begin
                 decoded_token = JWT.decode(token, Authsignal.configuration.api_secret_key)[0]
             rescue JWT::DecodeError
