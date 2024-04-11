@@ -47,7 +47,7 @@ module Authsignal
         def validate_challenge(user_id: nil, token:)
             path = "/validate"
 
-            response =  post("path", query: {}, body: { user_id: user_id, token: token }.to_json)
+            response =  post(path, query: {}, body: { user_id: user_id, token: token }.to_json)
             handle_response(response)
         end
 
