@@ -4,6 +4,13 @@ module Authsignal
         NO_API_KEY_MESSAGE  = "No Authsignal API Secret Key Set"
         include HTTParty
 
+        def handle_response(response)
+            unless response.success?
+              raise HTTParty::ResponseError, "Failed with status code #{response.code}"
+            end
+            response
+        end
+
         def initialize
             self.class.base_uri Authsignal.configuration.base_uri
             @api_key = require_api_key
@@ -40,7 +47,8 @@ module Authsignal
         def validate_challenge(user_id: nil, token:)
             path = "/validate"
 
-            post(path, query: {}, body: { user_id: user_id, token: token }.to_json)
+            response =  post("path", query: {}, body: { user_id: user_id, token: token }.to_json)
+            handle_response(response)
         end
 
         def get_action(user_id, action_code, idempotency_key)
