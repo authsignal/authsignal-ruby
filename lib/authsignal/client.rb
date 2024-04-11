@@ -37,6 +37,12 @@ module Authsignal
             get(path)
         end
 
+        def validate_challenge(user_id: nil, token:)
+            path = "/validate"
+
+            post(path, query: {}, body: { user_id: user_id, token: token }.to_json)
+        end
+
         def get_action(user_id, action_code, idempotency_key)
             get("/users/#{ERB::Util.url_encode(user_id)}/actions/#{action_code}/#{ERB::Util.url_encode(idempotency_key)}")
         end
