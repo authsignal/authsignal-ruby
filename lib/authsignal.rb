@@ -1,5 +1,4 @@
 require "httparty"
-require 'jwt'
 
 require "authsignal/version"
 require "authsignal/client"
