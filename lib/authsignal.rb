@@ -66,12 +66,8 @@ module Authsignal
 
         def validate_challenge(token:, user_id: nil)
             response = Client.new.validate_challenge(user_id: user_id, token: token)
-
-            state = response["state"]
-
-            success = state == "CHALLENGE_SUCCEEDED"
             
-            return { user_id: response["userId"], success: success, state: state, action: response["actionCode"] }
+            return { user_id: response["userId"], is_valid: response["isValid"], state: response["state"], action: response["actionCode"] }
           end
 
         private

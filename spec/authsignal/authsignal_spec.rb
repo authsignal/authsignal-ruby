@@ -133,7 +133,7 @@ RSpec.describe Authsignal do
 
       expect(response[:user_id]).to eq("legitimate_user_id")
       expect(response[:state]).to eq("CHALLENGE_SUCCEEDED")
-      expect(response[:success]).to eq(true)
+      expect(response[:is_valid]).to eq(true)
     end
 
     it "Checks that success is false when userId is incorrect" do
@@ -143,18 +143,18 @@ RSpec.describe Authsignal do
           'Content-Type'=>'application/json',
         })
       .to_return(
-        status: 200, 
+        status: 400, 
         body: {"error":"invalid_request","errorDescription":"The user is invalid."}.to_json, 
         headers: {'Content-Type' => 'application/json'}
       )
 
-      response = Authsignal.validate_challenge(
+      expect {
+        Authsignal.validate_challenge(
         user_id: "spoofed_user_id",
         token: "token",
       )
-
-      expect(response[:state]).to eq(nil)
-      expect(response[:success]).to eq(false)
+      }.to raise_error(HTTParty::ResponseError)
+      
     end
   end
 end
