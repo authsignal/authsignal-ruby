@@ -106,53 +106,79 @@ RSpec.describe Authsignal do
   end
 
   describe "validate_challenge" do
-    before do
-      stub_request(:get, "http://localhost:8080/users/legitimate_user_id/actions/alwaysChallenge/a682af7d-c929-4c29-9c2a-71e69ab5c603")
-      .with(basic_auth: ['secret', ''])
-      .to_return(body: {success: true, state: "CHALLENGE_SUCCEEDED", user_id: "legitimate_user_id", stateUpdatedAt: "2022-07-25T03:19:00.316Z", createdAt: "2022-07-25T03:19:00.316Z"}.to_json,
-                status: 200,
-                headers: {'Content-Type' => 'application/json'})
-    end
+    it "Checks that the isValid is true when userId correct" do
+      stub_request(:post, "http://localhost:8080/validate")
+      .with(
+        headers: {
+          'Content-Type'=>'application/json',
+        })
+      .to_return(
+        status: 200, 
+        body: {
+          "isValid":true,
+          "state":"CHALLENGE_SUCCEEDED",
+          "stateUpdatedAt":"2024-04-11T22:30:52.317Z",
+          "userId":"legitimate_user_id",
+          "actionCode":"alwaysChallenge",
+          "idempotencyKey":"aaafac77-42c9-486f-9a6e-086b63f32a5c",
+          "verificationMethod":"AUTHENTICATOR_APP"
+        }.to_json, 
+        headers: {'Content-Type' => 'application/json'}
+      )
 
-    payload = { 
-      "iat": Time.now.to_i, 
-      "sub": "legitimate_user_id", 
-      "exp": Time.now.to_i + 10 * 60, 
-      "iss": "https://challenge.authsignal.com/555159e4-adc3-454b-82b1-b55a2783f712", 
-      "aud": "https://challenge.authsignal.com/555159e4-adc3-454b-82b1-b55a2783f712", 
-      "scope": "read:authenticators add:authenticators update:authenticators remove:authenticators", 
-      "other": { 
-        "tenantId": "555159e4-adc3-454b-82b1-b55a2783f712", 
-        "publishableKey": "2fff14a6600b7a58170793109c78b876", 
-        "userId": "legitimate_user_id", 
-        "actionCode": "alwaysChallenge", 
-        "idempotencyKey": "a682af7d-c929-4c29-9c2a-71e69ab5c603" 
-      } 
-    }
-
-    hmac_secret = 'secret'
-
-    token = JWT.encode payload, hmac_secret, 'HS256'
-
-    it "Checks that the challenge was successful when userId correct" do
       response = Authsignal.validate_challenge(
         user_id: "legitimate_user_id",
-        token: token,
+        token: "token",
       )
 
       expect(response[:user_id]).to eq("legitimate_user_id")
       expect(response[:state]).to eq("CHALLENGE_SUCCEEDED")
-      expect(response[:success]).to eq(true)
+      expect(response[:is_valid]).to eq(true)
     end
 
-    it "Checks that success is false when userId is incorrect" do
-      response = Authsignal.validate_challenge(
-        user_id: "spoofed_user_id",
-        token: token,
+    it "Checks that isValid is false when userId is incorrect" do
+      stub_request(:post, "http://localhost:8080/validate")
+      .with(
+        headers: {
+          'Content-Type'=>'application/json',
+        })
+      .to_return(
+        status: 200, 
+        body: {
+          "isValid":false,
+        }.to_json, 
+        headers: {'Content-Type' => 'application/json'}
       )
 
+      response = Authsignal.validate_challenge(
+        user_id: "spoofed_user_id",
+        token: "token",
+      )
+
+      expect(response[:user_id]).to eq(nil)
       expect(response[:state]).to eq(nil)
-      expect(response[:success]).to eq(false)
+      expect(response[:is_valid]).to eq(false)
+    end
+
+    it "Checks that an error is thrown when an unknown error is returned from Authsignal" do
+      stub_request(:post, "http://localhost:8080/validate")
+      .with(
+        headers: {
+          'Content-Type'=>'application/json',
+        })
+      .to_return(
+        status: 404, 
+        body: {"message":"Not Found"}.to_json, 
+        headers: {'Content-Type' => 'application/json'}
+      )
+
+      expect {
+        Authsignal.validate_challenge(
+        user_id: "legitimate_user_id",
+        token: "token",
+      )
+      }.to raise_error(HTTParty::ResponseError)
+      
     end
   end
 end
