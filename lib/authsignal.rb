@@ -68,7 +68,7 @@ module Authsignal
             response = Client.new.validate_challenge(user_id: user_id, token: token)
             
             return { user_id: response["userId"], is_valid: response["isValid"], state: response["state"], action: response["actionCode"] }
-          end
+        end
 
         private
         def underscore(string)

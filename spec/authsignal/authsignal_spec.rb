@@ -106,7 +106,7 @@ RSpec.describe Authsignal do
   end
 
   describe "validate_challenge" do
-    it "Checks that the challenge was successful when userId correct" do
+    it "Checks that the isValid is true when userId correct" do
       stub_request(:post, "http://localhost:8080/validate")
       .with(
         headers: {
@@ -136,21 +136,45 @@ RSpec.describe Authsignal do
       expect(response[:is_valid]).to eq(true)
     end
 
-    it "Checks that success is false when userId is incorrect" do
+    it "Checks that isValid is false when userId is incorrect" do
       stub_request(:post, "http://localhost:8080/validate")
       .with(
         headers: {
           'Content-Type'=>'application/json',
         })
       .to_return(
-        status: 400, 
-        body: {"error":"invalid_request","errorDescription":"The user is invalid."}.to_json, 
+        status: 200, 
+        body: {
+          "isValid":false,
+        }.to_json, 
+        headers: {'Content-Type' => 'application/json'}
+      )
+
+      response = Authsignal.validate_challenge(
+        user_id: "spoofed_user_id",
+        token: "token",
+      )
+
+      expect(response[:user_id]).to eq(nil)
+      expect(response[:state]).to eq(nil)
+      expect(response[:is_valid]).to eq(false)
+    end
+
+    it "Checks that an error is thrown when an unknown error is returned from Authsignal" do
+      stub_request(:post, "http://localhost:8080/validate")
+      .with(
+        headers: {
+          'Content-Type'=>'application/json',
+        })
+      .to_return(
+        status: 404, 
+        body: {"message":"Not Found"}.to_json, 
         headers: {'Content-Type' => 'application/json'}
       )
 
       expect {
         Authsignal.validate_challenge(
-        user_id: "spoofed_user_id",
+        user_id: "legitimate_user_id",
         token: "token",
       )
       }.to raise_error(HTTParty::ResponseError)
