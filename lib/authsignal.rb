@@ -26,8 +26,8 @@ module Authsignal
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
-        def get_action(user_id:, action_code:, idempotency_key:)
-            response = Client.new.get_action(user_id, action_code, idempotency_key)
+        def get_action(user_id:, action:, idempotency_key:)
+            response = Client.new.get_action(user_id, action, idempotency_key)
             response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
         end
 
