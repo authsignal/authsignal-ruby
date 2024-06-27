@@ -96,7 +96,7 @@ RSpec.describe Authsignal do
         
       response = Authsignal.get_action(
         user_id: 1,
-        action_code: "testAction",
+        action: "testAction",
         idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
     
 

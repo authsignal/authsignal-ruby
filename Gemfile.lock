@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    authsignal-ruby (2.0.0)
+    authsignal-ruby (2.1.0)
       httparty (~> 0.21.0)
 
 GEM
