@@ -35,7 +35,7 @@ RSpec.describe Authsignal do
                     status: 200,
                     headers: {'Content-Type' => 'application/json'})
         
-      response = Authsignal.update_user(user_id: 1, {email: "test@test.com"})
+      response = Authsignal.update_user(user_id: 1, user: {email: "test@test.com"})
 
       expect(response[:email]).to eq("test@test.com")
     end

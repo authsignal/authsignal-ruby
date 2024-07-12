@@ -44,7 +44,7 @@ module Authsignal
             get(path)
         end
 
-        def update_user(user_id:, user_payload)
+        def update_user(user_id:, user:)
             post("/users/#{ERB::Util.url_encode(user_id)}", body: JSON.generate(user_payload))
         end
 
