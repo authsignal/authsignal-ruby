@@ -27,6 +27,20 @@ RSpec.describe Authsignal do
     end
   end
 
+  describe "update_user" do
+    it do
+      stub_request(:post, "http://localhost:8080/users/1")
+          .with(basic_auth: ['secret', ''])
+          .to_return(body: {userId: "1", email: "test@test.com"}.to_json,
+                    status: 200,
+                    headers: {'Content-Type' => 'application/json'})
+
+      response = Authsignal.update_user(user_id: 1, user: {email: "test@test.com"})
+
+      expect(response[:email]).to eq("test@test.com")
+    end
+  end
+
   describe "enroll_verified_authenticator" do
     it do
       payload = {

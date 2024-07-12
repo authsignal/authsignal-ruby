@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["justin@authsignal.com"]
 
   spec.summary = "The Authsignal ruby server side signal API."
-  spec.description = "Authsignal is a passwordless authentication/multifactor authentication step up service with a FraudOps rules engine"
+  spec.description = "Authsignal is a passwordless authentication/multifactor authentication with modern factors like passkeys"
   spec.homepage = "https://github.com/authsignal/authsignal-ruby"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
