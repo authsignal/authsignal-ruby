@@ -84,6 +84,20 @@ RSpec.describe Authsignal do
     end
   end
 
+  describe "delete_user_authenticator" do
+    it do
+      stub_request(:delete, "http://localhost:8080/users/1/authenticators/9b2cfd40-7df2-4658-852d-a0c3456e5a2e")
+          .with(basic_auth: ['secret', ''])
+          .to_return(body: {success: true}.to_json,
+                    status: 200,
+                    headers: {'Content-Type' => 'application/json'})
+
+      response = Authsignal.delete_user_authenticator(user_id: 1, user_authenticator_id: '9b2cfd40-7df2-4658-852d-a0c3456e5a2e')
+
+      expect(response[:success]).to eq(true)
+    end
+  end
+
   describe "track" do
     it do 
       stub_request(:post, "http://localhost:8080/users/123/actions/signIn")
