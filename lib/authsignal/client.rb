@@ -48,6 +48,10 @@ module Authsignal
             post("/users/#{ERB::Util.url_encode(user_id)}", body: JSON.generate(user))
         end
 
+        def delete_user(user_id:)
+            delete("/users/#{ERB::Util.url_encode(user_id)}")
+        end
+
         def validate_challenge(user_id: nil, token:)
             path = "/validate"
 
@@ -74,6 +78,10 @@ module Authsignal
 
         def post(path, query: {}, body: {})
             self.class.post(path, headers: @headers, body: body, basic_auth: {username: @api_key})
+        end
+
+        def delete(path, query: {}, body: {})
+            self.class.delete(path, headers: @headers, body: body, basic_auth: {username: @api_key})
         end
 
         private
