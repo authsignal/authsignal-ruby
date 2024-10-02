@@ -72,6 +72,10 @@ module Authsignal
             post("/users/#{ERB::Util.url_encode(user_id)}/authenticators", body: JSON.generate(authenticator))
         end
 
+        def delete_user_authenticator(user_id:, user_authenticator_id:)
+            delete("/users/#{ERB::Util.url_encode(user_id)}/authenticators/#{ERB::Util.url_encode(user_authenticator_id)}")
+        end
+
         def get(path, query: {})
             self.class.get(path, headers: @headers, basic_auth: {username: @api_key})
         end

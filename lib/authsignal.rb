@@ -54,6 +54,11 @@ module Authsignal
             response
         end
 
+        def delete_user_authenticator(user_id:, user_authenticator_id: )
+            response = Client.new.delete_user_authenticator(user_id: user_id, user_authenticator_id: user_authenticator_id)
+            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
+        end
+
         def track(event, options={})
             raise ArgumentError, "Action Code is required" unless event[:action].to_s.length > 0
             raise ArgumentError, "User ID value" unless event[:user_id].to_s.length > 0
