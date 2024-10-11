@@ -126,6 +126,33 @@ RSpec.describe Authsignal do
       expect(response[:state]).to eq("ALLOW")
       expect(response[:idempotency_key]).to eq("f7f6ff4c-600f-4d61-99a2-b1157fe43777")
     end
+
+    it "throws SDKError on non 200" do 
+      stub_request(:post, "http://localhost:8080/users/123/actions/signIn")
+        .with(basic_auth: ['secret', ''])
+        .to_return(body: "{\"state\":\"ALLOW\",\"idempotencyKey\":\"f7f6ff4c-600f-4d61-99a2-b1157fe43777\",\"ruleIds\":[]}", 
+        headers: {'Content-Type' => 'application/json'},
+        status: 400)
+      
+      expect {
+      response = Authsignal.track({
+                      action: "signIn",
+                      idempotency_key: "xxxx-xxxx",
+                      redirect_url: "https://wwww.example.com",
+                      user_id: "123",
+                      email: "test@example.com",
+                      device_id: "xxx",
+                      user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0) Gecko/20100101 Firefox/102.0",
+                      ip_address: "1.1.1.1",
+                      custom: {
+                          it_could_be_a_bool: true,
+                          it_could_be_a_string: "test",
+                          it_could_be_a_number: 400.00
+                      }
+                  }
+              )
+      }.to raise_error(Authsignal::SDKError, 'Failed to track action')
+    end
   end
 
   describe "get_action" do

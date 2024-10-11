@@ -5,6 +5,8 @@ require "authsignal/client"
 require "authsignal/configuration"
 
 module Authsignal
+    class SDKError < StandardError; end
+
     class << self
         attr_writer :configuration
 
@@ -68,15 +70,10 @@ module Authsignal
             response = Client.new.track(event, options)
             success = response && response.success?
             if success
-                puts("Tracked event! #{response.response.inspect}")
+                response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
             else
-                puts("Track failure! #{response.response.inspect} #{response.body}")
+                raise SDKError,'Failed to track action'
             end
-
-            response.transform_keys { |key| underscore(key) }.transform_keys(&:to_sym)
-        rescue => e
-            RuntimeError.new("Failed to track action")
-            false
         end
 
         def validate_challenge(token:, user_id: nil)
