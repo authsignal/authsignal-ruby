@@ -19,7 +19,6 @@ module Authsignal
             @client = Faraday.new do |builder|
                 builder.url_prefix = Authsignal.configuration.base_uri
                 builder.adapter :net_http
-                builder.request :retry, retry_options
                 builder.request :authorization, :basic, @api_key, nil
 
                 builder.headers['Accept'] = 'application/json'
@@ -31,6 +30,9 @@ module Authsignal
 
                 builder.use Middleware::JsonRequest
                 builder.use Middleware::JsonResponse
+
+                builder.request :retry, retry_options if Authsignal.configuration.retry
+                builder.response :logger, ::Logger.new(STDOUT), bodies: true if Authsignal.configuration.debug
             end
         end
 
