@@ -1,94 +1,101 @@
+require 'erb'
+
 module Authsignal
     class Client
         USER_AGENT = "Authsignal Ruby v#{Authsignal::VERSION}"
         NO_API_KEY_MESSAGE  = "No Authsignal API Secret Key Set"
-        include HTTParty
 
-        def handle_response(response)
-            unless response.success?
-              raise HTTParty::ResponseError, "Failed with status code #{response.code}"
-            end
-            response
-        end
+        RETRY_OPTIONS = {
+          max: 3,
+          interval: 0.1,
+          interval_randomness: 0.5,
+          backoff_factor: 2,
+        }.freeze
+        private_constant :RETRY_OPTIONS
 
-        def initialize
-            self.class.base_uri Authsignal.configuration.base_uri
+        def initialize(retry_options: RETRY_OPTIONS)
             @api_key = require_api_key
 
-            @headers = {
-                        "User-Agent" => USER_AGENT,
-                        'Content-Type' => 'application/json' 
-                        }
+            @client = Faraday.new do |builder|
+                builder.url_prefix = Authsignal.configuration.base_uri
+                builder.adapter :net_http
+                builder.request :authorization, :basic, @api_key, nil
+
+                builder.headers['Accept'] = 'application/json'
+                builder.headers['Content-Type'] = 'application/json'
+                builder.headers['User-Agent'] = USER_AGENT
+
+                builder.request :json
+                builder.response :json, parser_options: { symbolize_names: true }
+
+                builder.use Middleware::JsonRequest
+                builder.use Middleware::JsonResponse
+
+                builder.request :retry, retry_options if Authsignal.configuration.retry
+                builder.response :logger, ::Logger.new(STDOUT), bodies: true if Authsignal.configuration.debug
+            end
         end
 
-        def require_api_key
-            Authsignal.configuration.api_secret_key || print_api_key_warning
-        end
+        def track(event)
+            user_id = url_encode(event[:user_id])
+            action = event[:action]
 
-        def track(action, options = {})
-            actionCode = action[:action]
-            idempotencyKey = ERB::Util.url_encode(action[:idempotencyKey])
-            userId = ERB::Util.url_encode(action[:userId])
-            body = action.except(:userId, :actionCode)
-            path = "/users/#{userId}/actions/#{actionCode}"
+            path = "users/#{user_id}/actions/#{action}"
+            body = event.except(:user_id)
 
-            post(path, query: options, body: JSON.generate(body))
+            make_request(:post, path, body: body)
         end
 
         def get_user(user_id:, redirect_url: nil)
             if(redirect_url)
-                path = "/users/#{ERB::Util.url_encode(user_id)}?redirectUrl=#{redirect_url}"
+                path = "users/#{url_encode(user_id)}?redirectUrl=#{redirect_url}"
             else
-                path = "/users/#{ERB::Util.url_encode(user_id)}"
+                path = "users/#{url_encode(user_id)}"
             end
-            get(path)
+            make_request(:get, path)
         end
 
         def update_user(user_id:, user:)
-            post("/users/#{ERB::Util.url_encode(user_id)}", body: JSON.generate(user))
+            make_request(:post, "users/#{url_encode(user_id)}", body: user)
         end
 
         def delete_user(user_id:)
-            delete("/users/#{ERB::Util.url_encode(user_id)}")
+            make_request(:delete, "users/#{url_encode(user_id)}")
         end
 
         def validate_challenge(user_id: nil, token:)
-            path = "/validate"
+            path = "validate"
 
-            response = post(path, query: {}, body: { userId: user_id, token: token }.to_json)
-
-            handle_response(response)
+            make_request(:post, path, body: { user_id: user_id, token: token })
         end
 
         def get_action(user_id, action, idempotency_key)
-            get("/users/#{ERB::Util.url_encode(user_id)}/actions/#{action}/#{ERB::Util.url_encode(idempotency_key)}")
+            make_request(:get, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}")
         end
 
+        ##
+        # TODO: delete identify?
         def identify(user_id, user_payload)
-            post("/users/#{ERB::Util.url_encode(user_id)}", body: JSON.generate(user_payload))
+            make_request(:post , "users/#{url_encode(user_id)}", body: user_payload)
         end
 
         def enroll_verified_authenticator(user_id, authenticator)
-            post("/users/#{ERB::Util.url_encode(user_id)}/authenticators", body: JSON.generate(authenticator))
+            make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: authenticator)
         end
 
         def delete_user_authenticator(user_id:, user_authenticator_id:)
-            delete("/users/#{ERB::Util.url_encode(user_id)}/authenticators/#{ERB::Util.url_encode(user_authenticator_id)}")
-        end
-
-        def get(path, query: {})
-            self.class.get(path, headers: @headers, basic_auth: {username: @api_key})
-        end
-
-        def post(path, query: {}, body: {})
-            self.class.post(path, headers: @headers, body: body, basic_auth: {username: @api_key})
-        end
-
-        def delete(path, query: {}, body: {})
-            self.class.delete(path, headers: @headers, body: body, basic_auth: {username: @api_key})
+            make_request(:delete, "users/#{url_encode(user_id)}/authenticators/#{url_encode(user_authenticator_id)}")
         end
 
         private
+
+        def make_request(method, path, body: nil, headers: nil)
+            @client.public_send(method, path, body, headers)
+        end
+
+        def url_encode(s)
+            ERB::Util.url_encode(s)
+        end
 
         def version
             Authsignal.configuration.version
@@ -96,6 +103,10 @@ module Authsignal
 
         def print_api_key_warning
             $stderr.puts(NO_API_KEY_MESSAGE)
+        end
+
+        def require_api_key
+            Authsignal.configuration.api_secret_key || print_api_key_warning
         end
     end
 end
