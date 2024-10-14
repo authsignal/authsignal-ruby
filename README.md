@@ -48,11 +48,11 @@ require 'authsignal'
 Authsignal.setup do |config|
     config.api_secret_key = ENV["AUTHSIGNAL_SECRET_KEY"]
     config.base_uri = "https://au.signal.authsignal.com/v1"
-    
-    # If you would like Authsignal client to retry request due to network issues
+
+    # If you would like the Authsignal client to retry requests due to network issues
     config.retry = true # default value: false
-    
-    # If you would like to see inspect raw request/response in development
+
+    # If you would like to inspect raw request/response in development
     config.debug = true # default value: false
 end
 ```
