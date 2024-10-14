@@ -63,6 +63,52 @@ Authsignal's server side signal API has four main api calls `track`, `get_action
 
 For more details on these api calls, refer to our [official Ruby SDK docs](https://docs.authsignal.com/sdks/server/ruby#track).
 
+Example:
+```ruby
+Authsignal.track user_id: 'AS_001', action: 'withdraw', idempotency_key: 'a_random_hash'
+
+# returns:
+# {
+#    success?: true,
+#    state: 'ALLOW',
+#    idempotency_key: 'a_random_hash',
+#    ... rest of payload ...
+# }
+```
+
+### Response & Error handling
+
+Authsignal client come with 2 flavors of responses, by default calling the signal APIs will returns payload in hash.
+
+Example:
+```ruby
+Authsignal.enroll_verified_authenticator user_id: 'AS_001',
+                                         authenticator: {
+                                           oob_channel: 'INVALID', email: 'joebloke@authsignal.com'
+                                         }
+
+# returns:
+# {
+#    success?: false,
+#    status: 400,
+#    error: 'invalid_request',
+#    error_description: '/body/oobChannel must be equal to one of the allowed values'
+# }
+```
+
+All signal APIs come with a bang(`!`) counterpart, which will raise `Authsignal::ApiError` when the request is unsuccessful.
+
+
+Example:
+```ruby
+Authsignal.enroll_verified_authenticator! user_id: 'AS_001',
+                                         authenticator: {
+                                           oob_channel: 'INVALID', email: 'joebloke@authsignal.com'
+                                         }
+
+# raise:
+# <Authsignal::ApiError: invalid_request status: 400, error: invalid_request, description: /body/oobChannel must be equal to one o...
+```
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` or `bundle exec rspec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

@@ -3,10 +3,13 @@ require "faraday/retry"
 require "authsignal/version"
 require "authsignal/client"
 require "authsignal/configuration"
+require "authsignal/api_error"
 require "authsignal/middleware/json_response"
 require "authsignal/middleware/json_request"
 
 module Authsignal
+    NON_API_METHODS = [:setup, :configuration, :default_configuration]
+
     class << self
         attr_writer :configuration
 
@@ -76,18 +79,35 @@ module Authsignal
 
         def handle_response(response)
             if response.success?
-                response.body
+                handle_success_response(response)
             else
                 handle_error_response(response)
             end
         end
 
+        def handle_success_response(response)
+            response.body.merge(success?: true)
+        end
+
         def handle_error_response(response)
             case response.body
             when Hash
-                response.body.merge({ status: response.status })
+                response.body.merge(status: response.status, success?: false)
             else
-                { status: response.status }
+                { status: response&.status || 500, success?: false }
+            end
+        end
+    end
+
+    methods = Authsignal.singleton_class.public_instance_methods(false)
+    (methods - NON_API_METHODS).each do |method|
+        define_singleton_method("#{method}!") do |*args, **kwargs|
+            send(method, *args, **kwargs).tap do |response|
+                status = response[:status]
+                err = response[:error]
+                desc = response[:error_description]
+
+                raise ApiError.new(err, status, err, desc) unless response[:success?]
             end
         end
     end

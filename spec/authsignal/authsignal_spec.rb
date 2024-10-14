@@ -30,7 +30,7 @@ RSpec.describe Authsignal do
                    body: { error: "unauthorized", errorDescription: "Session expired" }.to_json )
 
       response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
-      expect(response).to eq status: 401, error: "unauthorized", error_description: "Session expired"
+      expect(response).to eq status: 401, error: "unauthorized", error_description: "Session expired", success?: false
     end
   end
 
@@ -60,6 +60,7 @@ RSpec.describe Authsignal do
       response = described_class.update_user(user_id: 1, user: { email: "test@test.com" })
 
       expect(response[:email]).to eq("test@test.com")
+      expect(response[:success?]).to be true
     end
   end
 
@@ -74,6 +75,7 @@ RSpec.describe Authsignal do
       response = described_class.delete_user(user_id: 1)
 
       expect(response[:success]).to eq(true)
+      expect(response[:success?]).to be true
     end
   end
 
@@ -103,6 +105,7 @@ RSpec.describe Authsignal do
                       phone_number: "+64270000000" })
 
       expect(response).to eq({
+                               success?: true,
                                authenticator:  {
                                  user_authenticator_id: "9b2cfd40-7df2-4658-852d-a0c3456e5a2e",
                                  authenticator_type:    "OOB",
@@ -127,6 +130,7 @@ RSpec.describe Authsignal do
       response = described_class.delete_user_authenticator(user_id: 1, user_authenticator_id: '9b2cfd40-7df2-4658-852d-a0c3456e5a2e')
 
       expect(response[:success]).to eq(true)
+      expect(response[:success?]).to be true
     end
   end
 
@@ -174,7 +178,7 @@ RSpec.describe Authsignal do
                                     }
                                   })
 
-      expect(response).to include  state: "ALLOW", idempotency_key: idempotency_key, rule_ids: []
+      expect(response).to include  state: "ALLOW", idempotency_key: idempotency_key, rule_ids: [], success?: true
     end
 
     it 'handles blank response' do
@@ -183,7 +187,7 @@ RSpec.describe Authsignal do
         .to_return(status: 400)
 
       response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
-      expect(response).to eq status: 400
+      expect(response).to eq status: 400, success?: false
     end
 
     it 'handles errors' do
@@ -192,7 +196,7 @@ RSpec.describe Authsignal do
         .to_return_json(status: 401, body: { error: "unauthorized", errorDescription: "Session expired" } )
 
       response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
-      expect(response).to eq status: 401, error: "unauthorized", error_description: "Session expired"
+      expect(response).to eq status: 401, error: "unauthorized", error_description: "Session expired", success?: false
     end
 
   end
@@ -213,6 +217,7 @@ RSpec.describe Authsignal do
 
       expect(response[:state]).to eq("ALLOW")
       expect(response[:state_updated_at]).to eq("2022-07-25T03:19:00.316Z")
+      expect(response[:success?]).to be true
     end
   end
 
@@ -246,6 +251,7 @@ RSpec.describe Authsignal do
       expect(response[:user_id]).to eq("legitimate_user_id")
       expect(response[:state]).to eq("CHALLENGE_SUCCEEDED")
       expect(response[:is_valid]).to eq(true)
+      expect(response[:success?]).to be true
     end
 
     it "Checks that isValid is false when userId is incorrect" do
@@ -271,6 +277,7 @@ RSpec.describe Authsignal do
       expect(response[:user_id]).to eq(nil)
       expect(response[:state]).to eq(nil)
       expect(response[:is_valid]).to eq(false)
+      expect(response[:success?]).to be true
     end
 
     it "Checks that an error is thrown when an unknown error is returned from Authsignal" do
@@ -290,7 +297,7 @@ RSpec.describe Authsignal do
         token:   "token",
       )
 
-      expect(response).to eq status: 404, message: "Not Found"
+      expect(response).to eq status: 404, message: "Not Found", success?: false
     end
   end
 end
