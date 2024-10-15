@@ -236,7 +236,7 @@ RSpec.describe Authsignal do
           "state":"CHALLENGE_SUCCEEDED",
           "stateUpdatedAt":"2024-04-11T22:30:52.317Z",
           "userId":"legitimate_user_id",
-          "actionCode":"alwaysChallenge",
+          "action":"alwaysChallenge",
           "idempotencyKey":"aaafac77-42c9-486f-9a6e-086b63f32a5c",
           "verificationMethod":"AUTHENTICATOR_APP"
         }.to_json, 
