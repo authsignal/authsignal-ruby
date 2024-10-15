@@ -9,7 +9,7 @@ module Authsignal
         # Otherwise, we can safe guard with: env.response_headers['content-type'] =~ /application\/json/
         parsed_body = JSON.parse(env.body)
         if parsed_body.is_a?(Hash)
-          parsed_body.delete(:action_code) # Remove deprecated action_code from response
+          parsed_body.delete("actionCode") # Remove deprecated actionCode from response
           env.body = transform_to_snake_case(parsed_body)
         end
       rescue JSON::ParserError
