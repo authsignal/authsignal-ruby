@@ -228,7 +228,7 @@ RSpec.describe Authsignal do
         headers: {
           'Content-Type'=>'application/json',
         },
-        body: { userId: "legitimate_user_id", token: "token", action: nil })
+        body: { userId: "legitimate_user_id", token: "token" })
       .to_return(
         status: 200, 
         body: {
@@ -260,7 +260,7 @@ RSpec.describe Authsignal do
         headers: {
           'Content-Type'=>'application/json',
         },
-        body: { userId: "spoofed_user_id", token: "token", action: nil })
+        body: { userId: "spoofed_user_id", token: "token" })
       .to_return(
         status: 200, 
         body: {
