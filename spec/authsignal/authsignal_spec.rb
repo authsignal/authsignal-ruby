@@ -265,6 +265,7 @@ RSpec.describe Authsignal do
         status: 200, 
         body: {
           "isValid":false,
+          "error": "User is invalid."
         }.to_json, 
         headers: {'Content-Type' => 'application/json'}
       )
