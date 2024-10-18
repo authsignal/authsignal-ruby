@@ -280,6 +280,32 @@ RSpec.describe Authsignal do
       expect(response[:success?]).to be true
     end
 
+    it "Checks that isValid is false when action is invalid" do
+      stub_request(:post, "#{base_uri}/validate")
+      .with(
+        headers: {
+          'Content-Type'=>'application/json',
+        },
+        body: { userId: "legitimate_user_id", token: "token", action: "invalid_action" })
+      .to_return(
+        status: 200, 
+        body: {
+          "isValid":false,
+          "error":"Action is invalid."
+        }.to_json, 
+        headers: {'Content-Type' => 'application/json'}
+      )
+
+      response = described_class.validate_challenge(
+        user_id: "legitimate_user_id",
+        action: "invalid_action",
+        token: "token",
+      )
+
+      expect(response[:is_valid]).to eq(false)
+      expect(response[:success?]).to be true
+    end
+
     it "Checks that an error is thrown when an unknown error is returned from Authsignal" do
       stub_request(:post, "#{base_uri}/validate")
       .with(
