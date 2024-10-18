@@ -65,8 +65,10 @@ module Authsignal
 
         def validate_challenge(user_id: nil, token:, action: nil)
             path = "validate"
+            body = { user_id: user_id, token: token, action: action }
+            body = remove_nil_values(body)
 
-            make_request(:post, path, body: { user_id: user_id, token: token, action: action })
+            make_request(:post, path, body: body)
         end
 
         def get_action(user_id, action, idempotency_key)
@@ -88,6 +90,10 @@ module Authsignal
         end
 
         private
+
+        def remove_nil_values(hash)
+            hash.reject { |_, value| value.nil? }
+        end
 
         def make_request(method, path, body: nil, headers: nil)
             @client.public_send(method, path, body, headers)
