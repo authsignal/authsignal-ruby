@@ -65,8 +65,9 @@ module Authsignal
 
         def validate_challenge(user_id: nil, token:, action: nil)
             path = "validate"
+            body = { user_id: user_id, token: token, action: action }
 
-            make_request(:post, path, body: { user_id: user_id, token: token, action: action })
+            make_request(:post, path, body: body)
         end
 
         def get_action(user_id, action, idempotency_key)
@@ -89,10 +90,6 @@ module Authsignal
 
         private
 
-        def make_request(method, path, body: nil, headers: nil)
-            @client.public_send(method, path, body, headers)
-        end
-
         def url_encode(s)
             ERB::Util.url_encode(s)
         end
@@ -107,6 +104,13 @@ module Authsignal
 
         def require_api_key
             Authsignal.configuration.api_secret_key || print_api_key_warning
+        end
+
+        def make_request(method, path, body: nil, headers: nil)
+            if body.is_a?(Hash)
+                body = body.reject { |_, v| v.nil? }
+            end
+            @client.public_send(method, path, body, headers)
         end
     end
 end

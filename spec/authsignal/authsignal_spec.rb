@@ -228,7 +228,7 @@ RSpec.describe Authsignal do
         headers: {
           'Content-Type'=>'application/json',
         },
-        body: { userId: "legitimate_user_id", token: "token", action: nil })
+        body: { userId: "legitimate_user_id", token: "token" })
       .to_return(
         status: 200, 
         body: {
@@ -260,11 +260,12 @@ RSpec.describe Authsignal do
         headers: {
           'Content-Type'=>'application/json',
         },
-        body: { userId: "spoofed_user_id", token: "token", action: nil })
+        body: { userId: "spoofed_user_id", token: "token" })
       .to_return(
         status: 200, 
         body: {
           "isValid":false,
+          "error": "User is invalid."
         }.to_json, 
         headers: {'Content-Type' => 'application/json'}
       )
@@ -276,6 +277,32 @@ RSpec.describe Authsignal do
 
       expect(response[:user_id]).to eq(nil)
       expect(response[:state]).to eq(nil)
+      expect(response[:is_valid]).to eq(false)
+      expect(response[:success?]).to be true
+    end
+
+    it "Checks that isValid is false when action is invalid" do
+      stub_request(:post, "#{base_uri}/validate")
+      .with(
+        headers: {
+          'Content-Type'=>'application/json',
+        },
+        body: { userId: "legitimate_user_id", token: "token", action: "invalid_action" })
+      .to_return(
+        status: 200, 
+        body: {
+          "isValid":false,
+          "error":"Action is invalid."
+        }.to_json, 
+        headers: {'Content-Type' => 'application/json'}
+      )
+
+      response = described_class.validate_challenge(
+        user_id: "legitimate_user_id",
+        action: "invalid_action",
+        token: "token",
+      )
+
       expect(response[:is_valid]).to eq(false)
       expect(response[:success?]).to be true
     end
