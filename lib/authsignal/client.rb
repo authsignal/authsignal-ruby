@@ -110,7 +110,6 @@ module Authsignal
             if body.is_a?(Hash)
                 body = body.reject { |_, v| v.nil? }
             end
-            puts "body: #{body}"
             @client.public_send(method, path, body, headers)
         end
     end
