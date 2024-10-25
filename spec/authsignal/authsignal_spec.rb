@@ -119,7 +119,7 @@ RSpec.describe Authsignal do
     end
   end
 
-  describe ".delete_user_authenticator" do
+  describe ".delete_authenticator" do
     it 'succeeds' do
       stub_request(:delete, "#{base_uri}/users/1/authenticators/9b2cfd40-7df2-4658-852d-a0c3456e5a2e")
           .with(basic_auth: ['secret', ''])
@@ -127,7 +127,7 @@ RSpec.describe Authsignal do
                     status: 200,
                     headers: {'Content-Type' => 'application/json'})
 
-      response = described_class.delete_user_authenticator(user_id: 1, user_authenticator_id: '9b2cfd40-7df2-4658-852d-a0c3456e5a2e')
+      response = described_class.delete_authenticator(user_id: 1, user_authenticator_id: '9b2cfd40-7df2-4658-852d-a0c3456e5a2e')
 
       expect(response[:success]).to eq(true)
       expect(response[:success?]).to be true
