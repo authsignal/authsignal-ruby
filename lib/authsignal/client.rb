@@ -84,7 +84,7 @@ module Authsignal
             make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: authenticator)
         end
 
-        def delete_user_authenticator(user_id:, user_authenticator_id:)
+        def delete_authenticator(user_id:, user_authenticator_id:)
             make_request(:delete, "users/#{url_encode(user_id)}/authenticators/#{url_encode(user_authenticator_id)}")
         end
 
