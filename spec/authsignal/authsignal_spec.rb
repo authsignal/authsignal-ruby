@@ -221,6 +221,34 @@ RSpec.describe Authsignal do
     end
   end
 
+  describe ".update_action_state" do
+    let(:user_id) { "100" }
+    let(:action) { "testAction" }
+    let(:idempotency_key) { "15cac140-f639-48c5-92db-835ec8d3d144" }
+    let(:state) { "ALLOW" }
+
+    it "succeeds" do
+      stub_request(:patch, "#{base_uri}/users/#{user_id}/actions/#{action}/#{idempotency_key}")
+          .with(
+            basic_auth: ['secret', ''],
+            headers: { 'Content-Type'=>'application/json' })
+          .to_return(body: {state: state, ruleIds: [], stateUpdatedAt: "2024-11-01T03:19:00.316Z", createdAt: "2024-11-01T03:19:00.316Z"}.to_json,
+            status: 200,
+            headers: {'Content-Type' => 'application/json'})
+
+      response = described_class.update_action_state(
+        user_id: user_id,
+        action: action, 
+        idempotency_key: idempotency_key,
+        state: state
+      ) 
+
+      expect(response[:state]).to eq(state)
+      expect(response[:state_updated_at]).to eq("2024-11-01T03:19:00.316Z")
+      expect(response[:success?]).to be true      
+    end
+  end
+
   describe ".validate_challenge" do
     it "Checks that the isValid is true when userId correct" do
       stub_request(:post, "#{base_uri}/validate")
