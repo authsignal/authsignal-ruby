@@ -49,6 +49,13 @@ module Authsignal
             handle_response(response)
         end
 
+        def update_action_state(user_id:, action:, idempotency_key:, state:)
+            # NOTE: Rely on API to respond when given invalid state
+            response = Client.new.update_action_state(user_id: user_id, action: action, idempotency_key: idempotency_key, state: state)
+
+            handle_response(response)
+        end
+
         def enroll_verified_authenticator(user_id:, authenticator:)
             response = Client.new.enroll_verified_authenticator(user_id, authenticator)
 
