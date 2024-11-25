@@ -25,8 +25,8 @@ module Authsignal
             configuration.defaults
         end
 
-        def get_user(user_id:, redirect_url: nil)
-            response = Client.new.get_user(user_id: user_id, redirect_url: redirect_url)
+        def get_user(user_id:)
+            response = Client.new.get_user(user_id: user_id)
 
             handle_response(response)
         end
@@ -62,7 +62,7 @@ module Authsignal
             handle_response(response)
         end
 
-        def delete_authenticator(user_id:, user_authenticator_id: )
+        def delete_authenticator(user_id:, user_authenticator_id:)
             response = Client.new.delete_authenticator(user_id: user_id, user_authenticator_id: user_authenticator_id)
 
             handle_response(response)

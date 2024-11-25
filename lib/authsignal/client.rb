@@ -42,12 +42,8 @@ module Authsignal
             make_request(:post, path, body: attributes)
         end
 
-        def get_user(user_id:, redirect_url: nil)
-            if(redirect_url)
-                path = "users/#{url_encode(user_id)}?redirectUrl=#{redirect_url}"
-            else
-                path = "users/#{url_encode(user_id)}"
-            end
+        def get_user(user_id:)
+            path = "users/#{url_encode(user_id)}"
             make_request(:get, path)
         end
 
