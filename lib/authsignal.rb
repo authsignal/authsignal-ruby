@@ -99,9 +99,9 @@ module Authsignal
         def handle_error_response(response)
             case response.body
             when Hash
-                response.body.merge(status: response.status, success?: false)
+                { status_code: response.status, success?: false, error_code: response.body[:error], error_description: response.body[:error_description] }
             else
-                { status: response&.status || 500, success?: false }
+                { status_code: response&.status || 500, success?: false }
             end
         end
     end
@@ -110,11 +110,11 @@ module Authsignal
     (methods - NON_API_METHODS).each do |method|
         define_singleton_method("#{method}!") do |*args, **kwargs|
             send(method, *args, **kwargs).tap do |response|
-                status = response[:status]
-                err = response[:error]
-                desc = response[:error_description]
+                status_code = response[:status_code]
+                error_code = response[:error_code]
+                error_description = response[:error_description]
 
-                raise ApiError.new(err, status, err, desc) unless response[:success?]
+                raise ApiError.new(status_code, error_code, error_description) unless response[:success?]
             end
         end
     end
