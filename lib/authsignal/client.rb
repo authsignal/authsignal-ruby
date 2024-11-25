@@ -17,7 +17,7 @@ module Authsignal
             @api_key = require_api_key
 
             @client = Faraday.new do |builder|
-                builder.url_prefix = Authsignal.configuration.base_uri
+                builder.url_prefix = Authsignal.configuration.api_url
                 builder.adapter :net_http
                 builder.request :authorization, :basic, @api_key, nil
 

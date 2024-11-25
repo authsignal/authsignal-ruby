@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Authsignal do
-  let(:base_uri) { 'http://localhost:8080/v1' }
+  let(:api_url) { 'http://localhost:8080/v1' }
 
   it "has a version number" do
     expect(Authsignal::VERSION).not_to be nil
@@ -10,7 +10,7 @@ RSpec.describe Authsignal do
   before do
     Authsignal.setup do |config|
       config.api_secret_key = 'secret'
-      config.base_uri = base_uri
+      config.api_url = api_url
     end
   end
 
@@ -20,7 +20,7 @@ RSpec.describe Authsignal do
     let(:idempotency_key) { "f7f6ff4c-600f-4d61-99a2-b1157fe43777" }
     let(:user_id) { 123 }
     let(:action) { 'signIn' }
-    let(:url) { "#{base_uri}/users/#{user_id}/actions/#{action}" }
+    let(:url) { "#{api_url}/users/#{user_id}/actions/#{action}" }
 
     it 'handles plain text' do
       stub_request(:post, url)
@@ -36,7 +36,7 @@ RSpec.describe Authsignal do
 
   describe ".get_user" do
     it 'succeeds' do
-      stub_request(:get, "#{base_uri}/users/1")
+      stub_request(:get, "#{api_url}/users/1")
           .with(basic_auth: ['secret', ''])
           .to_return(body: {isEnrolled: false, url: "https://www.example.com", accessToken: "xxx"}.to_json,
                     status: 200,
@@ -51,7 +51,7 @@ RSpec.describe Authsignal do
 
   describe ".update_user" do
     it 'succeeds' do
-      stub_request(:post, "#{base_uri}/users/1")
+      stub_request(:post, "#{api_url}/users/1")
           .with(basic_auth: ['secret', ''], body: { email: "test@test.com" })
           .to_return(body: {userId: "1", email: "test@test.com"}.to_json,
                     status: 200,
@@ -66,7 +66,7 @@ RSpec.describe Authsignal do
 
   describe ".delete_user" do
     it 'succeeds' do
-      stub_request(:delete, "#{base_uri}/users/1")
+      stub_request(:delete, "#{api_url}/users/1")
           .with(basic_auth: ['secret', ''])
           .to_return(body: {success: true}.to_json,
                     status: 200,
@@ -93,7 +93,7 @@ RSpec.describe Authsignal do
         recoveryCodes: ["xxxx"]
       }
 
-      stub_request(:post, "#{base_uri}/users/1/authenticators")
+      stub_request(:post, "#{api_url}/users/1/authenticators")
           .with(basic_auth: ['secret', ''])
           .with(body: { oobChannel:"SMS",phoneNumber:"+64270000000" })
           .to_return(body: payload.to_json,
@@ -121,7 +121,7 @@ RSpec.describe Authsignal do
 
   describe ".delete_authenticator" do
     it 'succeeds' do
-      stub_request(:delete, "#{base_uri}/users/1/authenticators/9b2cfd40-7df2-4658-852d-a0c3456e5a2e")
+      stub_request(:delete, "#{api_url}/users/1/authenticators/9b2cfd40-7df2-4658-852d-a0c3456e5a2e")
           .with(basic_auth: ['secret', ''])
           .to_return(body: {success: true}.to_json,
                     status: 200,
@@ -138,7 +138,7 @@ RSpec.describe Authsignal do
     let(:idempotency_key) { "f7f6ff4c-600f-4d61-99a2-b1157fe43777" }
     let(:user_id) { 123 }
     let(:action) { 'signIn' }
-    let(:url) { "#{base_uri}/users/#{user_id}/actions/#{action}" }
+    let(:url) { "#{api_url}/users/#{user_id}/actions/#{action}" }
 
     it 'succeeds' do
       stub_request(:post, url)
@@ -203,7 +203,7 @@ RSpec.describe Authsignal do
 
   describe ".get_action" do
     it 'succeeds' do
-      stub_request(:get, "#{base_uri}/users/1/actions/testAction/15cac140-f639-48c5-92db-835ec8d3d144")
+      stub_request(:get, "#{api_url}/users/1/actions/testAction/15cac140-f639-48c5-92db-835ec8d3d144")
           .with(basic_auth: ['secret', ''])
           .to_return(body: {state: "ALLOW", ruleIds: [], stateUpdatedAt: "2022-07-25T03:19:00.316Z", createdAt: "2022-07-25T03:19:00.316Z"}.to_json,
                     status: 200,
@@ -228,7 +228,7 @@ RSpec.describe Authsignal do
     let(:state) { "ALLOW" }
 
     it "succeeds" do
-      stub_request(:patch, "#{base_uri}/users/#{user_id}/actions/#{action}/#{idempotency_key}")
+      stub_request(:patch, "#{api_url}/users/#{user_id}/actions/#{action}/#{idempotency_key}")
           .with(
             basic_auth: ['secret', ''],
             headers: { 'Content-Type'=>'application/json' })
@@ -251,7 +251,7 @@ RSpec.describe Authsignal do
 
   describe ".validate_challenge" do
     it "Checks that the isValid is true when userId correct" do
-      stub_request(:post, "#{base_uri}/validate")
+      stub_request(:post, "#{api_url}/validate")
       .with(
         headers: {
           'Content-Type'=>'application/json',
@@ -283,7 +283,7 @@ RSpec.describe Authsignal do
     end
 
     it "Checks that isValid is false when userId is incorrect" do
-      stub_request(:post, "#{base_uri}/validate")
+      stub_request(:post, "#{api_url}/validate")
       .with(
         headers: {
           'Content-Type'=>'application/json',
@@ -310,7 +310,7 @@ RSpec.describe Authsignal do
     end
 
     it "Checks that isValid is false when action is invalid" do
-      stub_request(:post, "#{base_uri}/validate")
+      stub_request(:post, "#{api_url}/validate")
       .with(
         headers: {
           'Content-Type'=>'application/json',
@@ -336,7 +336,7 @@ RSpec.describe Authsignal do
     end
 
     it "Checks that an error is thrown when an unknown error is returned from Authsignal" do
-      stub_request(:post, "#{base_uri}/validate")
+      stub_request(:post, "#{api_url}/validate")
       .with(
         headers: {
           'Content-Type'=>'application/json',
