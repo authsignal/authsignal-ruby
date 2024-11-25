@@ -74,7 +74,7 @@ module Authsignal
         end
 
         def validate_challenge(token:, user_id: nil, action: nil)
-            response = Client.new.validate_challenge(user_id: user_id, token: token, action: action)
+            response = Client.new.validate_challenge(token: token,user_id: user_id, action: action)
             
             handle_response(response)
         end
