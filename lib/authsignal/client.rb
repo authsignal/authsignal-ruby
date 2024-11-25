@@ -62,7 +62,7 @@ module Authsignal
             make_request(:post, path, body: body)
         end
 
-        def get_action(user_id, action, idempotency_key)
+        def get_action(user_id:, action:, idempotency_key:)
             make_request(:get, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}")
         end
 

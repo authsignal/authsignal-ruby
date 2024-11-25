@@ -44,7 +44,7 @@ module Authsignal
         end
 
         def get_action(user_id:, action:, idempotency_key:)
-            response = Client.new.get_action(user_id, action, idempotency_key)
+            response = Client.new.get_action(user_id: user_id, action: action, idempotency_key: idempotency_key)
 
             handle_response(response)
         end
