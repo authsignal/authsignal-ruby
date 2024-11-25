@@ -68,11 +68,8 @@ module Authsignal
             handle_response(response)
         end
 
-        def track(event, options={})
-            raise ArgumentError, "Action Code is required" unless event[:action].to_s.length > 0
-            raise ArgumentError, "User ID value" unless event[:user_id].to_s.length > 0
-
-            response = Client.new.track(event)
+        def track(:user_id, :action, :attributes)
+            response = Client.new.track(user_id, action, attributes)
             handle_response(response)
         end
 
