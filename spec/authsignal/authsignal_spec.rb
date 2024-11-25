@@ -30,7 +30,7 @@ RSpec.describe Authsignal do
                    body: { error: "unauthorized", errorDescription: "Session expired" }.to_json )
 
       response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
-      expect(response).to eq status: 401, error: "unauthorized", error_description: "Session expired", success?: false
+      expect(response).to eq status_code: 401, error_code: "unauthorized", error_description: "Session expired", success?: false
     end
   end
 
@@ -187,7 +187,7 @@ RSpec.describe Authsignal do
         .to_return(status: 400)
 
       response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
-      expect(response).to eq status: 400, success?: false
+      expect(response).to eq status_code: 400, success?: false
     end
 
     it 'handles errors' do
@@ -196,7 +196,7 @@ RSpec.describe Authsignal do
         .to_return_json(status: 401, body: { error: "unauthorized", errorDescription: "Session expired" } )
 
       response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
-      expect(response).to eq status: 401, error: "unauthorized", error_description: "Session expired", success?: false
+      expect(response).to eq status_code: 401, error_code: "unauthorized", error_description: "Session expired", success?: false
     end
 
   end
@@ -343,7 +343,7 @@ RSpec.describe Authsignal do
         })
       .to_return(
         status: 404, 
-        body: {"message":"Not Found"}.to_json, 
+        body: {"error":"unauthorized", "errorDescription":"The request is unauthorized. Check that your API key and region base URL are correctly configured."}.to_json, 
         headers: {'Content-Type' => 'application/json'}
       )
 
@@ -352,7 +352,7 @@ RSpec.describe Authsignal do
         token:   "token",
       )
 
-      expect(response).to eq status: 404, message: "Not Found", success?: false
+      expect(response).to eq error_code: "unauthorized", status_code: 404, error_description: "The request is unauthorized. Check that your API key and region base URL are correctly configured.", success?: false
     end
   end
 end

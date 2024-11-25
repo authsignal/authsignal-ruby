@@ -92,8 +92,8 @@ Authsignal.enroll_verified_authenticator user_id: 'AS_001',
 # returns:
 # {
 #    success?: false,
-#    status: 400,
-#    error: 'invalid_request',
+#    status_code: 400,
+#    error_code: 'invalid_request',
 #    error_description: '/body/oobChannel must be equal to one of the allowed values'
 # }
 ```
@@ -109,7 +109,7 @@ Authsignal.enroll_verified_authenticator! user_id: 'AS_001',
                                          }
 
 # raise:
-# <Authsignal::ApiError: invalid_request status: 400, error: invalid_request, description: /body/oobChannel must be equal to one o...
+# <Authsignal::ApiError: AuthsignalError: 400 - /body/oobChannel must be equal to one of the allowed values. status_code: 401, error_code: invalid_request, error_description: /body/oobChannel must be equal to one of the allowed values.
 ```
 
 ## Development
