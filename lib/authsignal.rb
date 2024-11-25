@@ -56,8 +56,8 @@ module Authsignal
             handle_response(response)
         end
 
-        def enroll_verified_authenticator(user_id:, authenticator:)
-            response = Client.new.enroll_verified_authenticator(user_id, authenticator)
+        def enroll_verified_authenticator(user_id:, attributes:)
+            response = Client.new.enroll_verified_authenticator(user_id: user_id, attributes: attributes)
 
             handle_response(response)
         end

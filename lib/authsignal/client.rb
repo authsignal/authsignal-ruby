@@ -81,8 +81,8 @@ module Authsignal
             make_request(:post , "users/#{url_encode(user_id)}", body: user_payload)
         end
 
-        def enroll_verified_authenticator(user_id, authenticator)
-            make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: authenticator)
+        def enroll_verified_authenticator(user_id:, attributes:)
+            make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: attributes)
         end
 
         def delete_authenticator(user_id:, user_authenticator_id:)
