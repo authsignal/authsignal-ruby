@@ -343,7 +343,7 @@ RSpec.describe Authsignal do
         })
       .to_return(
         status: 404, 
-        body: {"error":"unauthorized", "errorDescription":"The request is unauthorized. Check that your API key and region base URL are correctly configured."}.to_json, 
+        body: {"error":"unauthorized", "errorDescription":"The request is unauthorized. Check that your API key and region api URL are correctly configured."}.to_json, 
         headers: {'Content-Type' => 'application/json'}
       )
 
@@ -352,7 +352,7 @@ RSpec.describe Authsignal do
         token:   "token",
       )
 
-      expect(response).to eq error_code: "unauthorized", status_code: 404, error_description: "The request is unauthorized. Check that your API key and region base URL are correctly configured.", success?: false
+      expect(response).to eq error_code: "unauthorized", status_code: 404, error_description: "The request is unauthorized. Check that your API key and region api URL are correctly configured.", success?: false
     end
   end
 end

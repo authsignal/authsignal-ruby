@@ -34,7 +34,7 @@ You can find your `api_secret_key` in the [Authsignal Portal](https://portal.aut
 
 You must specify the correct `api_url` for your tenant's region.
 
-| Region      | Base URL                            |
+| Region      | API URL                             |
 | ----------- | ----------------------------------- |
 | US (Oregon) | https://signal.authsignal.com/v1    |
 | AU (Sydney) | https://au.signal.authsignal.com/v1 |
