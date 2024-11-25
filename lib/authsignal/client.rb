@@ -55,8 +55,8 @@ module Authsignal
             make_request(:get, path)
         end
 
-        def update_user(user_id:, user:)
-            make_request(:post, "users/#{url_encode(user_id)}", body: user)
+        def update_user(user_id:, attributes:)
+            make_request(:post, "users/#{url_encode(user_id)}", body: attributes)
         end
 
         def delete_user(user_id:)
