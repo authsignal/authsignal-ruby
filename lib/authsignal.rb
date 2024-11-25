@@ -68,7 +68,7 @@ module Authsignal
             handle_response(response)
         end
 
-        def track(:user_id, :action, :attributes)
+        def track(user_id:, action:, attributes:)
             response = Client.new.track(user_id: user_id, action: action, attributes: attributes)
             handle_response(response)
         end

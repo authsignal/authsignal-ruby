@@ -36,7 +36,7 @@ module Authsignal
             end
         end
 
-        def track(:user_id, :action, :attributes)
+        def track(user_id:, action:, attributes:)
             path = "users/#{user_id}/actions/#{action}"
 
             make_request(:post, path, body: attributes)
