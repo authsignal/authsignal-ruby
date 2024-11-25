@@ -32,7 +32,7 @@ end
 
 You can find your `api_secret_key` in the [Authsignal Portal](https://portal.authsignal.com/organisations/tenants/api).
 
-You must specify the correct `baseUrl` for your tenant's region.
+You must specify the correct `api_url` for your tenant's region.
 
 | Region      | Base URL                            |
 | ----------- | ----------------------------------- |
@@ -40,14 +40,14 @@ You must specify the correct `baseUrl` for your tenant's region.
 | AU (Sydney) | https://au.signal.authsignal.com/v1 |
 | EU (Dublin) | https://eu.signal.authsignal.com/v1 |
 
-For example, to set the base URL to use our AU region:
+For example, to set the API URL to use our AU region:
 
 ```
 require 'authsignal'
 
 Authsignal.setup do |config|
     config.api_secret_key = ENV["AUTHSIGNAL_SECRET_KEY"]
-    config.base_uri = "https://au.signal.authsignal.com/v1"
+    config.api_url = "https://au.signal.authsignal.com/v1"
 
     # If you would like the Authsignal client to retry requests due to network issues
     config.retry = true # default value: false

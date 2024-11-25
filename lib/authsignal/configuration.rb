@@ -13,7 +13,7 @@ module Authsignal
         end
   
         config_option :api_secret_key
-        config_option :base_uri
+        config_option :api_url
         config_option :debug
         config_option :retry
 
@@ -22,7 +22,7 @@ module Authsignal
       
             # set default attribute values
             @defaults = OpenStruct.new({
-                base_uri: 'https://signal.authsignal.com/v1/',
+                api_url: 'https://signal.authsignal.com/v1/',
                 retry: false,
                 debug: false
             })
