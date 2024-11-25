@@ -36,14 +36,10 @@ module Authsignal
             end
         end
 
-        def track(event)
-            user_id = url_encode(event[:user_id])
-            action = event[:action]
-
+        def track(:user_id, :action, :attributes)
             path = "users/#{user_id}/actions/#{action}"
-            body = event.except(:user_id)
 
-            make_request(:post, path, body: body)
+            make_request(:post, path, body: attributes)
         end
 
         def get_user(user_id:, redirect_url: nil)
