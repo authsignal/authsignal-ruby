@@ -63,7 +63,7 @@ module Authsignal
             make_request(:delete, "users/#{url_encode(user_id)}")
         end
 
-        def validate_challenge(user_id: nil, token:, action: nil)
+        def validate_challenge(token:, user_id: nil, action: nil)
             path = "validate"
             body = { user_id: user_id, token: token, action: action }
 
