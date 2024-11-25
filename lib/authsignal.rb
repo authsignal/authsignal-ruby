@@ -31,8 +31,8 @@ module Authsignal
             handle_response(response)
         end
 
-        def update_user(user_id:, user:)
-            response = Client.new.update_user(user_id: user_id, user: user)
+        def update_user(user_id:, attributes:)
+            response = Client.new.update_user(user_id: user_id, attributes: attributes)
 
             handle_response(response)
         end
