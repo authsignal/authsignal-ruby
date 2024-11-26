@@ -351,5 +351,39 @@ RSpec.describe Authsignal do
 
       expect(response).to eq error_code: "unauthorized", status_code: 404, error_description: "The request is unauthorized. Check that your API key and region api URL are correctly configured.", success?: false
     end
+    
+  end
+
+  describe ".get_authenticators" do
+    let(:user_id) { "100" }
+    
+    let(:authenticator) {{
+        userAuthenticatorId: "18fbbe25-f84d-49ab-ab71-577adaefee25",
+        authenticatorType: "OOB", 
+        verificationMethod: "EMAIL_MAGIC_LINK",
+        createdAt: "2024-10-09T02:58:33.911Z",
+        email: "email@authsignal.com",
+        oobChannel: "EMAIL_MAGIC_LINK",
+        verifiedAt: "2024-10-09T02:59:19.995Z",
+        lastVerifiedAt: "2024-10-09T02:59:19.995Z"     
+    }}
+
+
+    it "succeeds" do
+      stub_request(:get, "#{api_url}/users/#{user_id}/authenticators")
+          .with(
+            basic_auth: ['secret', ''],
+            headers: { 'Content-Type'=>'application/json' })
+          .to_return(body: [authenticator].to_json,
+            status: 200,
+            headers: {'Content-Type' => 'application/json'})
+
+      response = described_class.get_authenticators(
+        user_id: user_id,
+      ) 
+
+      expect(response[:data]).to eq([authenticator])
+      expect(response[:success?]).to be true      
+    end
   end
 end

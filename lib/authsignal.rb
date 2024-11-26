@@ -43,6 +43,12 @@ module Authsignal
             handle_response(response)
         end
 
+        def get_authenticators(user_id:)
+            response = Client.new.get_authenticators(user_id: user_id)
+
+            handle_response(response)
+        end
+
         def enroll_verified_authenticator(user_id:, attributes:)
             response = Client.new.enroll_verified_authenticator(user_id: user_id, attributes: attributes)
 
@@ -90,7 +96,11 @@ module Authsignal
         end
 
         def handle_success_response(response)
-            response.body.merge(success?: true)
+            if response.body.is_a?(Array)
+                { success?: true, data: response.body }
+            else
+                response.body.merge(success?: true)
+            end
         end
 
         def handle_error_response(response)

@@ -49,6 +49,10 @@ module Authsignal
             make_request(:delete, "users/#{url_encode(user_id)}")
         end
 
+        def get_authenticators(user_id:)
+            make_request(:get, "users/#{url_encode(user_id)}/authenticators")
+        end
+
         def enroll_verified_authenticator(user_id:, attributes:)
             make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: attributes)
         end
