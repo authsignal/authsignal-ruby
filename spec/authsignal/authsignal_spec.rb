@@ -84,11 +84,9 @@ RSpec.describe Authsignal do
     
     let(:authenticator) {{
         userAuthenticatorId: "18fbbe25-f84d-49ab-ab71-577adaefee25",
-        authenticatorType: "OOB", 
         verificationMethod: "EMAIL_MAGIC_LINK",
         createdAt: "2024-10-09T02:58:33.911Z",
         email: "email@authsignal.com",
-        oobChannel: "EMAIL_MAGIC_LINK",
         verifiedAt: "2024-10-09T02:59:19.995Z",
         lastVerifiedAt: "2024-10-09T02:59:19.995Z"     
     }}
