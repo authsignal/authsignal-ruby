@@ -43,19 +43,6 @@ module Authsignal
             handle_response(response)
         end
 
-        def get_action(user_id:, action:, idempotency_key:)
-            response = Client.new.get_action(user_id: user_id, action: action, idempotency_key: idempotency_key)
-
-            handle_response(response)
-        end
-
-        def update_action(user_id:, action:, idempotency_key:, attributes:)
-            # NOTE: Rely on API to respond when given invalid state
-            response = Client.new.update_action(user_id: user_id, action: action, idempotency_key: idempotency_key, attributes: attributes)
-
-            handle_response(response)
-        end
-
         def enroll_verified_authenticator(user_id:, attributes:)
             response = Client.new.enroll_verified_authenticator(user_id: user_id, attributes: attributes)
 
@@ -76,6 +63,19 @@ module Authsignal
         def validate_challenge(token:, user_id: nil, action: nil)
             response = Client.new.validate_challenge(token: token,user_id: user_id, action: action)
             
+            handle_response(response)
+        end
+
+        def get_action(user_id:, action:, idempotency_key:)
+            response = Client.new.get_action(user_id: user_id, action: action, idempotency_key: idempotency_key)
+
+            handle_response(response)
+        end
+
+        def update_action(user_id:, action:, idempotency_key:, attributes:)
+            # NOTE: Rely on API to respond when given invalid state
+            response = Client.new.update_action(user_id: user_id, action: action, idempotency_key: idempotency_key, attributes: attributes)
+
             handle_response(response)
         end
 

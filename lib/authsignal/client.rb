@@ -36,12 +36,6 @@ module Authsignal
             end
         end
 
-        def track(user_id:, action:, attributes:)
-            path = "users/#{user_id}/actions/#{action}"
-
-            make_request(:post, path, body: attributes)
-        end
-
         def get_user(user_id:)
             path = "users/#{url_encode(user_id)}"
             make_request(:get, path)
@@ -53,6 +47,20 @@ module Authsignal
 
         def delete_user(user_id:)
             make_request(:delete, "users/#{url_encode(user_id)}")
+        end
+
+        def enroll_verified_authenticator(user_id:, attributes:)
+            make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: attributes)
+        end
+
+        def delete_authenticator(user_id:, user_authenticator_id:)
+            make_request(:delete, "users/#{url_encode(user_id)}/authenticators/#{url_encode(user_authenticator_id)}")
+        end
+
+        def track(user_id:, action:, attributes:)
+            path = "users/#{user_id}/actions/#{action}"
+
+            make_request(:post, path, body: attributes)
         end
 
         def validate_challenge(token:, user_id: nil, action: nil)
@@ -74,14 +82,6 @@ module Authsignal
         # TODO: delete identify?
         def identify(user_id, user_payload)
             make_request(:post , "users/#{url_encode(user_id)}", body: user_payload)
-        end
-
-        def enroll_verified_authenticator(user_id:, attributes:)
-            make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: attributes)
-        end
-
-        def delete_authenticator(user_id:, user_authenticator_id:)
-            make_request(:delete, "users/#{url_encode(user_id)}/authenticators/#{url_encode(user_authenticator_id)}")
         end
 
         private
