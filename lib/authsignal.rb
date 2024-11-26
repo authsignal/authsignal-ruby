@@ -25,14 +25,14 @@ module Authsignal
             configuration.defaults
         end
 
-        def get_user(user_id:, redirect_url: nil)
-            response = Client.new.get_user(user_id: user_id, redirect_url: redirect_url)
+        def get_user(user_id:)
+            response = Client.new.get_user(user_id: user_id)
 
             handle_response(response)
         end
 
-        def update_user(user_id:, user:)
-            response = Client.new.update_user(user_id: user_id, user: user)
+        def update_user(user_id:, attributes:)
+            response = Client.new.update_user(user_id: user_id, attributes: attributes)
 
             handle_response(response)
         end
@@ -43,42 +43,44 @@ module Authsignal
             handle_response(response)
         end
 
-        def get_action(user_id:, action:, idempotency_key:)
-            response = Client.new.get_action(user_id, action, idempotency_key)
+        def get_authenticators(user_id:)
+            response = Client.new.get_authenticators(user_id: user_id)
 
             handle_response(response)
         end
 
-        def update_action_state(user_id:, action:, idempotency_key:, state:)
-            # NOTE: Rely on API to respond when given invalid state
-            response = Client.new.update_action_state(user_id: user_id, action: action, idempotency_key: idempotency_key, state: state)
+        def enroll_verified_authenticator(user_id:, attributes:)
+            response = Client.new.enroll_verified_authenticator(user_id: user_id, attributes: attributes)
 
             handle_response(response)
         end
 
-        def enroll_verified_authenticator(user_id:, authenticator:)
-            response = Client.new.enroll_verified_authenticator(user_id, authenticator)
-
-            handle_response(response)
-        end
-
-        def delete_authenticator(user_id:, user_authenticator_id: )
+        def delete_authenticator(user_id:, user_authenticator_id:)
             response = Client.new.delete_authenticator(user_id: user_id, user_authenticator_id: user_authenticator_id)
 
             handle_response(response)
         end
 
-        def track(event, options={})
-            raise ArgumentError, "Action Code is required" unless event[:action].to_s.length > 0
-            raise ArgumentError, "User ID value" unless event[:user_id].to_s.length > 0
-
-            response = Client.new.track(event)
+        def track(user_id:, action:, attributes:)
+            response = Client.new.track(user_id: user_id, action: action, attributes: attributes)
             handle_response(response)
         end
 
         def validate_challenge(token:, user_id: nil, action: nil)
-            response = Client.new.validate_challenge(user_id: user_id, token: token, action: action)
+            response = Client.new.validate_challenge(token: token,user_id: user_id, action: action)
             
+            handle_response(response)
+        end
+
+        def get_action(user_id:, action:, idempotency_key:)
+            response = Client.new.get_action(user_id: user_id, action: action, idempotency_key: idempotency_key)
+
+            handle_response(response)
+        end
+
+        def update_action(user_id:, action:, idempotency_key:, attributes:)
+            response = Client.new.update_action(user_id: user_id, action: action, idempotency_key: idempotency_key, attributes: attributes)
+
             handle_response(response)
         end
 
@@ -93,7 +95,11 @@ module Authsignal
         end
 
         def handle_success_response(response)
-            response.body.merge(success?: true)
+            if response.body.is_a?(Array)
+                { success?: true, data: response.body }
+            else
+                response.body.merge(success?: true)
+            end
         end
 
         def handle_error_response(response)

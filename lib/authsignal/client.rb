@@ -36,61 +36,56 @@ module Authsignal
             end
         end
 
-        def track(event)
-            user_id = url_encode(event[:user_id])
-            action = event[:action]
-
-            path = "users/#{user_id}/actions/#{action}"
-            body = event.except(:user_id)
-
-            make_request(:post, path, body: body)
-        end
-
-        def get_user(user_id:, redirect_url: nil)
-            if(redirect_url)
-                path = "users/#{url_encode(user_id)}?redirectUrl=#{redirect_url}"
-            else
-                path = "users/#{url_encode(user_id)}"
-            end
+        def get_user(user_id:)
+            path = "users/#{url_encode(user_id)}"
             make_request(:get, path)
         end
 
-        def update_user(user_id:, user:)
-            make_request(:post, "users/#{url_encode(user_id)}", body: user)
+        def update_user(user_id:, attributes:)
+            make_request(:post, "users/#{url_encode(user_id)}", body: attributes)
         end
 
         def delete_user(user_id:)
             make_request(:delete, "users/#{url_encode(user_id)}")
         end
 
-        def validate_challenge(user_id: nil, token:, action: nil)
+        def get_authenticators(user_id:)
+            make_request(:get, "users/#{url_encode(user_id)}/authenticators")
+        end
+
+        def enroll_verified_authenticator(user_id:, attributes:)
+            make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: attributes)
+        end
+
+        def delete_authenticator(user_id:, user_authenticator_id:)
+            make_request(:delete, "users/#{url_encode(user_id)}/authenticators/#{url_encode(user_authenticator_id)}")
+        end
+
+        def track(user_id:, action:, attributes:)
+            path = "users/#{user_id}/actions/#{action}"
+
+            make_request(:post, path, body: attributes)
+        end
+
+        def validate_challenge(token:, user_id: nil, action: nil)
             path = "validate"
             body = { user_id: user_id, token: token, action: action }
 
             make_request(:post, path, body: body)
         end
 
-        def get_action(user_id, action, idempotency_key)
+        def get_action(user_id:, action:, idempotency_key:)
             make_request(:get, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}")
         end
 
-        def update_action_state(user_id:, action:, idempotency_key:, state:) 
-            body = { state: state }
-            make_request(:patch, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}", body: body)
+        def update_action(user_id:, action:, idempotency_key:, attributes:) 
+            make_request(:patch, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}", body: attributes)
         end
 
         ##
         # TODO: delete identify?
         def identify(user_id, user_payload)
             make_request(:post , "users/#{url_encode(user_id)}", body: user_payload)
-        end
-
-        def enroll_verified_authenticator(user_id, authenticator)
-            make_request(:post, "users/#{url_encode(user_id)}/authenticators", body: authenticator)
-        end
-
-        def delete_authenticator(user_id:, user_authenticator_id:)
-            make_request(:delete, "users/#{url_encode(user_id)}/authenticators/#{url_encode(user_authenticator_id)}")
         end
 
         private
