@@ -79,6 +79,39 @@ RSpec.describe Authsignal do
     end
   end
 
+  describe ".get_authenticators" do
+    let(:user_id) { "100" }
+    
+    let(:authenticator) {{
+        userAuthenticatorId: "18fbbe25-f84d-49ab-ab71-577adaefee25",
+        authenticatorType: "OOB", 
+        verificationMethod: "EMAIL_MAGIC_LINK",
+        createdAt: "2024-10-09T02:58:33.911Z",
+        email: "email@authsignal.com",
+        oobChannel: "EMAIL_MAGIC_LINK",
+        verifiedAt: "2024-10-09T02:59:19.995Z",
+        lastVerifiedAt: "2024-10-09T02:59:19.995Z"     
+    }}
+
+
+    it "succeeds" do
+      stub_request(:get, "#{api_url}/users/#{user_id}/authenticators")
+          .with(
+            basic_auth: ['secret', ''],
+            headers: { 'Content-Type'=>'application/json' })
+          .to_return(body: [authenticator].to_json,
+            status: 200,
+            headers: {'Content-Type' => 'application/json'})
+
+      response = described_class.get_authenticators(
+        user_id: user_id,
+      ) 
+
+      expect(response[:data]).to eq([authenticator])
+      expect(response[:success?]).to be true      
+    end
+  end
+
   describe ".enroll_verified_authenticator" do
     it 'succeeds' do
       payload = {
@@ -198,54 +231,6 @@ RSpec.describe Authsignal do
 
   end
 
-  describe ".get_action" do
-    it 'succeeds' do
-      stub_request(:get, "#{api_url}/users/1/actions/testAction/15cac140-f639-48c5-92db-835ec8d3d144")
-          .with(basic_auth: ['secret', ''])
-          .to_return(body: {state: "ALLOW", ruleIds: [], stateUpdatedAt: "2022-07-25T03:19:00.316Z", createdAt: "2022-07-25T03:19:00.316Z"}.to_json,
-                    status: 200,
-                    headers: {'Content-Type' => 'application/json'})
-        
-      response = described_class.get_action(
-        user_id: 1,
-        action: "testAction",
-        idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
-    
-
-      expect(response[:state]).to eq("ALLOW")
-      expect(response[:state_updated_at]).to eq("2022-07-25T03:19:00.316Z")
-      expect(response[:success?]).to be true
-    end
-  end
-
-  describe ".update_action" do
-    let(:user_id) { "100" }
-    let(:action) { "testAction" }
-    let(:idempotency_key) { "15cac140-f639-48c5-92db-835ec8d3d144" }
-    let(:state) { "ALLOW" }
-
-    it "succeeds" do
-      stub_request(:patch, "#{api_url}/users/#{user_id}/actions/#{action}/#{idempotency_key}")
-          .with(
-            basic_auth: ['secret', ''],
-            headers: { 'Content-Type'=>'application/json' })
-          .to_return(body: {state: state, ruleIds: [], stateUpdatedAt: "2024-11-01T03:19:00.316Z", createdAt: "2024-11-01T03:19:00.316Z"}.to_json,
-            status: 200,
-            headers: {'Content-Type' => 'application/json'})
-
-      response = described_class.update_action(
-        user_id: user_id,
-        action: action, 
-        idempotency_key: idempotency_key,
-        attributes: { state: state }
-      ) 
-
-      expect(response[:state]).to eq(state)
-      expect(response[:state_updated_at]).to eq("2024-11-01T03:19:00.316Z")
-      expect(response[:success?]).to be true      
-    end
-  end
-
   describe ".validate_challenge" do
     it "Checks that the isValid is true when userId correct" do
       stub_request(:post, "#{api_url}/validate")
@@ -351,38 +336,52 @@ RSpec.describe Authsignal do
 
       expect(response).to eq error_code: "unauthorized", status_code: 404, error_description: "The request is unauthorized. Check that your API key and region api URL are correctly configured.", success?: false
     end
-    
   end
 
-  describe ".get_authenticators" do
-    let(:user_id) { "100" }
+  describe ".get_action" do
+    it 'succeeds' do
+      stub_request(:get, "#{api_url}/users/1/actions/testAction/15cac140-f639-48c5-92db-835ec8d3d144")
+          .with(basic_auth: ['secret', ''])
+          .to_return(body: {state: "ALLOW", ruleIds: [], stateUpdatedAt: "2022-07-25T03:19:00.316Z", createdAt: "2022-07-25T03:19:00.316Z"}.to_json,
+                    status: 200,
+                    headers: {'Content-Type' => 'application/json'})
+        
+      response = described_class.get_action(
+        user_id: 1,
+        action: "testAction",
+        idempotency_key: "15cac140-f639-48c5-92db-835ec8d3d144")
     
-    let(:authenticator) {{
-        userAuthenticatorId: "18fbbe25-f84d-49ab-ab71-577adaefee25",
-        authenticatorType: "OOB", 
-        verificationMethod: "EMAIL_MAGIC_LINK",
-        createdAt: "2024-10-09T02:58:33.911Z",
-        email: "email@authsignal.com",
-        oobChannel: "EMAIL_MAGIC_LINK",
-        verifiedAt: "2024-10-09T02:59:19.995Z",
-        lastVerifiedAt: "2024-10-09T02:59:19.995Z"     
-    }}
 
+      expect(response[:state]).to eq("ALLOW")
+      expect(response[:state_updated_at]).to eq("2022-07-25T03:19:00.316Z")
+      expect(response[:success?]).to be true
+    end
+  end
+
+  describe ".update_action" do
+    let(:user_id) { "100" }
+    let(:action) { "testAction" }
+    let(:idempotency_key) { "15cac140-f639-48c5-92db-835ec8d3d144" }
+    let(:state) { "ALLOW" }
 
     it "succeeds" do
-      stub_request(:get, "#{api_url}/users/#{user_id}/authenticators")
+      stub_request(:patch, "#{api_url}/users/#{user_id}/actions/#{action}/#{idempotency_key}")
           .with(
             basic_auth: ['secret', ''],
             headers: { 'Content-Type'=>'application/json' })
-          .to_return(body: [authenticator].to_json,
+          .to_return(body: {state: state, ruleIds: [], stateUpdatedAt: "2024-11-01T03:19:00.316Z", createdAt: "2024-11-01T03:19:00.316Z"}.to_json,
             status: 200,
             headers: {'Content-Type' => 'application/json'})
 
-      response = described_class.get_authenticators(
+      response = described_class.update_action(
         user_id: user_id,
+        action: action, 
+        idempotency_key: idempotency_key,
+        attributes: { state: state }
       ) 
 
-      expect(response[:data]).to eq([authenticator])
+      expect(response[:state]).to eq(state)
+      expect(response[:state_updated_at]).to eq("2024-11-01T03:19:00.316Z")
       expect(response[:success?]).to be true      
     end
   end
