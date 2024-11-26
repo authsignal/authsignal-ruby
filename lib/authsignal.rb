@@ -79,7 +79,6 @@ module Authsignal
         end
 
         def update_action(user_id:, action:, idempotency_key:, attributes:)
-            # NOTE: Rely on API to respond when given invalid state
             response = Client.new.update_action(user_id: user_id, action: action, idempotency_key: idempotency_key, attributes: attributes)
 
             handle_response(response)
