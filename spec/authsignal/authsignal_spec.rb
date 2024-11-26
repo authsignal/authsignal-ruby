@@ -29,7 +29,7 @@ RSpec.describe Authsignal do
                    headers: { 'Content-Type' => 'text/plain' },
                    body: { error: "unauthorized", errorDescription: "Session expired" }.to_json )
 
-      response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
+      response = described_class.track(user_id: "123", action: "signIn", attributes: { idempotency_key: idempotency_key })
       expect(response).to eq status_code: 401, error_code: "unauthorized", error_description: "Session expired", success?: false
     end
   end
@@ -57,7 +57,7 @@ RSpec.describe Authsignal do
                     status: 200,
                     headers: {'Content-Type' => 'application/json'})
 
-      response = described_class.update_user(user_id: 1, user: { email: "test@test.com" })
+      response = described_class.update_user(user_id: 1, attributes: { email: "test@test.com" })
 
       expect(response[:email]).to eq("test@test.com")
       expect(response[:success?]).to be true
@@ -101,7 +101,7 @@ RSpec.describe Authsignal do
                     headers: {'Content-Type' => 'application/json'})
         
       response = described_class.enroll_verified_authenticator(user_id: 1,
-                    authenticator:{ oob_channel: "SMS",
+                    attributes:{ oob_channel: "SMS",
                       phone_number: "+64270000000" })
 
       expect(response).to eq({
@@ -145,7 +145,6 @@ RSpec.describe Authsignal do
         .with(basic_auth: ['secret', ''],
               body: {
                 idempotencyKey: idempotency_key,
-                action: action,
                 redirectUrl: "https://wwww.example.com",
                 email: "test@example.com",
                 deviceId: "xxx",
@@ -162,11 +161,9 @@ RSpec.describe Authsignal do
               })
         .to_return_json(body: { state: "ALLOW", idempotencyKey: idempotency_key, ruleIds: [] })
 
-      response = described_class.track({
-                                    action: action,
+      response = described_class.track(user_id: user_id, action: action, attributes: {
                                     idempotency_key: idempotency_key,
                                     redirect_url: "https://wwww.example.com",
-                                    user_id: user_id,
                                     email: "test@example.com",
                                     device_id: "xxx",
                                     user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0) Gecko/20100101 Firefox/102.0",
@@ -186,7 +183,7 @@ RSpec.describe Authsignal do
         .with(basic_auth: ['secret', ''])
         .to_return(status: 400)
 
-      response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
+      response = described_class.track(action: "signIn", user_id: "123", attributes: { idempotency_key: idempotency_key })
       expect(response).to eq status_code: 400, success?: false
     end
 
@@ -195,7 +192,7 @@ RSpec.describe Authsignal do
         .with(basic_auth: ['secret', ''])
         .to_return_json(status: 401, body: { error: "unauthorized", errorDescription: "Session expired" } )
 
-      response = described_class.track(action: "signIn", idempotency_key: idempotency_key, user_id: "123")
+      response = described_class.track(action: "signIn", user_id: "123", attributes: { idempotency_key: idempotency_key })
       expect(response).to eq status_code: 401, error_code: "unauthorized", error_description: "Session expired", success?: false
     end
 
@@ -221,7 +218,7 @@ RSpec.describe Authsignal do
     end
   end
 
-  describe ".update_action_state" do
+  describe ".update_action" do
     let(:user_id) { "100" }
     let(:action) { "testAction" }
     let(:idempotency_key) { "15cac140-f639-48c5-92db-835ec8d3d144" }
@@ -236,11 +233,11 @@ RSpec.describe Authsignal do
             status: 200,
             headers: {'Content-Type' => 'application/json'})
 
-      response = described_class.update_action_state(
+      response = described_class.update_action(
         user_id: user_id,
         action: action, 
         idempotency_key: idempotency_key,
-        state: state
+        attributes: { state: state }
       ) 
 
       expect(response[:state]).to eq(state)

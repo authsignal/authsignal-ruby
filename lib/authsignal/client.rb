@@ -67,8 +67,7 @@ module Authsignal
         end
 
         def update_action(user_id:, action:, idempotency_key:, attributes:) 
-            body = { state: attributes.state }
-            make_request(:patch, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}", body: body)
+            make_request(:patch, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}", body: attributes)
         end
 
         ##
