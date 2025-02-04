@@ -1,5 +1,1 @@
-## [Unreleased]
-
-## [0.1.0] - 2022-07-14
-
-- Initial release
+SDK changes are currently documented in the [Releases](https://github.com/authsignal/authsignal-ruby/releases) section.
