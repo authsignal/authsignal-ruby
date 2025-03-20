@@ -16,7 +16,7 @@ gem "authsignal-ruby"
 
 Refer to our [SDK documentation](https://docs.authsignal.com/sdks/server/overview) for information on how to use this SDK.
 
-Or check out our [Ruby on Rails Quickstart Guide](https://docs.authsignal.com/quickstarts/ruby-on-rails).
+Or check out our [Ruby on Rails Quickstart Guide](https://docs.authsignal.com/integrations/ruby-on-rails).
 
 ### Response & Error handling
 
