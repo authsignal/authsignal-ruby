@@ -55,5 +55,5 @@ Authsignal.enroll_verified_authenticator!(
 )
 
 # raise:
-# <Authsignal::ApiError: AuthsignalError: 400 - body.verificationMethod must be equal to one of the allowed values - allowedValues: AUTHENTICATOR_APP,EMAIL_MAGIC_LINK,EMAIL_OTP,SMS.
+<Authsignal::ApiError: AuthsignalError: 400 - body.verificationMethod must be equal to one of the allowed values - allowedValues: AUTHENTICATOR_APP,EMAIL_MAGIC_LINK,EMAIL_OTP,SMS.
 ```
