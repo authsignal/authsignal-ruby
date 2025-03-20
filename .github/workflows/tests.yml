@@ -1,0 +1,19 @@
+name: SDK Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  sdk-tests:
+    runs-on: ubuntu-latest
+    env:
+      AUTHSIGNAL_API_URL: ${{ secrets.AUTHSIGNAL_API_URL }}
+      AUTHSIGNAL_API_SECRET_KEY: ${{ secrets.AUTHSIGNAL_API_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+      - run: bundle install
+      - run: bundle exec rspec
