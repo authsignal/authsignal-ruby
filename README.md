@@ -28,18 +28,17 @@ Example:
 Authsignal.enroll_verified_authenticator(
   user_id: 'AS_001',
   attributes: {
-    oob_channel: 'INVALID',
-    email: 'joebloke@authsignal.com'
+    verification_method: 'INVALID',
+    email: 'hamish@authsignal.com'
   }
 )
 
 # returns:
-# {
-#    success?: false,
-#    status_code: 400,
-#    error_code: 'invalid_request',
-#    error_description: '/body/oobChannel must be equal to one of the allowed values'
-# }
+{
+  "error": "invalid_request",
+  "errorCode": "invalid_request",
+  "errorDescription": "body.verificationMethod must be equal to one of the allowed values - allowedValues: AUTHENTICATOR_APP,EMAIL_MAGIC_LINK,EMAIL_OTP,SMS"
+}
 ```
 
 All methods have a bang (!) counterpart that raises an Authsignal::ApiError if the request fails.
@@ -50,11 +49,11 @@ Example:
 Authsignal.enroll_verified_authenticator!(
   user_id: 'AS_001',
   attributes: {
-    oob_channel: 'INVALID',
-    email: 'joebloke@authsignal.com'
+    verification_method: 'INVALID',
+    email: 'hamish@authsignal.com'
   }
 )
 
 # raise:
-# <Authsignal::ApiError: AuthsignalError: 400 - /body/oobChannel must be equal to one of the allowed values. status_code: 401, error_code: invalid_request, error_description: /body/oobChannel must be equal to one of the allowed values.
+# <Authsignal::ApiError: AuthsignalError: 400 - body.verificationMethod must be equal to one of the allowed values - allowedValues: AUTHENTICATOR_APP,EMAIL_MAGIC_LINK,EMAIL_OTP,SMS.
 ```
