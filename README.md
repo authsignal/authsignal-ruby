@@ -18,28 +18,6 @@ Refer to our [SDK documentation](https://docs.authsignal.com/sdks/server/overvie
 
 Or check out our [Ruby on Rails Quickstart Guide](https://docs.authsignal.com/quickstarts/ruby-on-rails).
 
-## Usage
-
-Example:
-
-```ruby
-Authsignal.track(
-  user_id: 'AS_001',
-  action: 'withdraw',
-  attributes: {
-    idempotency_key: 'a_random_hash'
-  },
-)
-
-# returns:
-# {
-#    success?: true,
-#    state: 'ALLOW',
-#    idempotency_key: 'a_random_hash',
-#    ... rest of payload ...
-# }
-```
-
 ### Response & Error handling
 
 The Authsignal SDK offers two response formats. By default, its methods return the payload in hash format.
