@@ -179,13 +179,13 @@ RSpec.describe Authsignal do
     expect(authenticators[:data].length).to be > 0
 
     authenticators[:data].each do |authenticator|
-      next unless authenticator[:verification_method] == "PASSKEY"
+      next unless authenticator[:verificationMethod] == "PASSKEY"
 
-      name = authenticator.dig(:webauthn_credential, :aaguid_mapping, :name)
+      name = authenticator.dig(:webauthnCredential, :aaguidMapping, :name)
       expect(name).not_to be_nil
       expect(["Google Password Manager", "iCloud Keychain"]).to include(name)
-
-      browser_name = authenticator.dig(:webauthn_credential, :parsed_user_agent, :browser, :name)
+      
+      browser_name = authenticator.dig(:webauthnCredential, :parsedUserAgent, :browser, :name)
       expect(browser_name).to eq("Chrome")
     end
   end
