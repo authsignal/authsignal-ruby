@@ -16,6 +16,8 @@ jobs:
         if: contains(github.ref, 'refs/tags/')
         uses: cadwallion/publish-rubygems-action@master
         env:
+          AUTHSIGNAL_API_URL: ${{ secrets.AUTHSIGNAL_API_URL }}
+          AUTHSIGNAL_API_SECRET_KEY: ${{ secrets.AUTHSIGNAL_API_SECRET_KEY }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
           RELEASE_COMMAND: bundle exec rake -f RakefileRelease
