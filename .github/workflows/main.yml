@@ -15,7 +15,9 @@ jobs:
       matrix:
         ruby:
           - 3.0.3
-
+    env:
+      AUTHSIGNAL_API_URL: ${{ secrets.AUTHSIGNAL_API_URL }}
+      AUTHSIGNAL_API_SECRET_KEY: ${{ secrets.AUTHSIGNAL_API_SECRET_KEY }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby

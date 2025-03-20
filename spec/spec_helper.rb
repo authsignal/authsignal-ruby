@@ -2,8 +2,9 @@
 
 require "authsignal"
 require 'webmock/rspec'
+require 'dotenv/load'
 
-WebMock.disable_net_connect!()
+WebMock.allow_net_connect!
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
