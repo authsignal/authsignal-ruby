@@ -24,6 +24,7 @@ module Authsignal
                 builder.headers['Accept'] = 'application/json'
                 builder.headers['Content-Type'] = 'application/json'
                 builder.headers['User-Agent'] = USER_AGENT
+                builder.headers['X-Authsignal-Version'] = Authsignal::VERSION
 
                 builder.request :json
                 builder.response :json, parser_options: { symbolize_names: true }
