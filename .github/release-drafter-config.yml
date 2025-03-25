@@ -1,6 +1,10 @@
 name-template: "v$RESOLVED_VERSION 🚀"
 tag-template: "v$RESOLVED_VERSION"
 categories:
+  - title: "⚠️ Breaking Changes"
+    labels:
+      - "breaking"
+      - "major"
   - title: "🚀 Features"
     labels:
       - "feature"
@@ -56,7 +60,7 @@ autolabeler:
       - '/fix\/.+/'
     title:
       - "/fix/i"
-  - label: "enhancement"
+  - label: "feature"
     branch:
       - '/feature\/.+/'
   - label: "dependencies"
