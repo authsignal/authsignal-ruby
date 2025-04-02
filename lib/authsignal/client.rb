@@ -2,7 +2,7 @@ require 'erb'
 
 module Authsignal
     class Client
-        USER_AGENT = "Authsignal Ruby v#{Authsignal::VERSION}"
+        USER_AGENT = "authsignal-ruby"
         NO_API_KEY_MESSAGE  = "No Authsignal API Secret Key Set"
 
         RETRY_OPTIONS = {
