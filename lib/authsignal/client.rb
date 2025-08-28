@@ -75,6 +75,42 @@ module Authsignal
             make_request(:post, path, body: body)
         end
 
+        def challenge(verification_method:, action:, email: nil, phone_number: nil, sms_channel: nil)
+            path = "challenge"
+            body = { verification_method: verification_method, action: action, email: email, phone_number: phone_number, sms_channel: sms_channel }
+
+            make_request(:post, path, body: body)
+        end
+
+        def verify(challenge_id:, verification_code:)
+            path = "verify"
+            body = { challenge_id: challenge_id, verification_code: verification_code }
+
+            make_request(:post, path, body: body)
+        end
+
+        def get_challenge(challenge_id: nil, user_id: nil, action: nil, verification_method: nil)
+            path = "challenges"
+            
+            params = {}
+            params[:challenge_id] = challenge_id if challenge_id
+            params[:user_id] = user_id if user_id
+            params[:action] = action if action
+            params[:verification_method] = verification_method if verification_method
+            
+            query_string = params.map { |k, v| "#{k}=#{url_encode(v.to_s)}" }.join('&')
+            path_with_params = query_string.empty? ? path : "#{path}?#{query_string}"
+
+            make_request(:get, path_with_params)
+        end
+
+        def claim_challenge(challenge_id:, user_id:, skip_verification_check: nil, device_id: nil, ip_address: nil, user_agent: nil, custom: nil)
+            path = "claim"
+            body = { challenge_id: challenge_id, user_id: user_id, skip_verification_check: skip_verification_check, device_id: device_id, ip_address: ip_address, user_agent: user_agent, custom: custom }
+
+            make_request(:post, path, body: body)
+        end
+
         def get_action(user_id:, action:, idempotency_key:)
             make_request(:get, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}")
         end
