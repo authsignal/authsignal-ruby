@@ -66,7 +66,6 @@ RSpec.describe Authsignal::Webhook do
       tolerance = -1
       timestamp = Time.now.to_i
 
-      # Generate signature dynamically with the current API key
       hmac_content = "#{timestamp}.#{payload}"
       computed_signature = OpenSSL::HMAC.digest(
         OpenSSL::Digest.new('sha256'),
@@ -104,7 +103,6 @@ RSpec.describe Authsignal::Webhook do
       tolerance = -1
       timestamp = Time.now.to_i
 
-      # Generate signature dynamically with the current API key
       hmac_content = "#{timestamp}.#{payload}"
       computed_signature = OpenSSL::HMAC.digest(
         OpenSSL::Digest.new('sha256'),
@@ -113,7 +111,6 @@ RSpec.describe Authsignal::Webhook do
       )
       signature_b64 = Base64.strict_encode64(computed_signature).delete('=')
       
-      # Simulate multiple signatures (current key + old key)
       signature = "t=#{timestamp},v2=#{signature_b64},v2=oldKeySignature123"
 
       event = Authsignal.webhook.construct_event(payload, signature, tolerance)
