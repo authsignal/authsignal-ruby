@@ -1,4 +1,6 @@
 require 'json'
+require 'openssl'
+require 'base64'
 
 RSpec.describe Authsignal::Webhook do
   let(:api_url) { ENV['AUTHSIGNAL_API_URL'] }
@@ -62,8 +64,17 @@ RSpec.describe Authsignal::Webhook do
       })
 
       tolerance = -1
+      timestamp = Time.now.to_i
 
-      signature = "t=1740016316,v2=89vWAaNuB+MoOqeOFdINSi6VRGlT1OkeJIi9PPZkk/8"
+      # Generate signature dynamically with the current API key
+      hmac_content = "#{timestamp}.#{payload}"
+      computed_signature = OpenSSL::HMAC.digest(
+        OpenSSL::Digest.new('sha256'),
+        api_secret_key,
+        hmac_content
+      )
+      signature_b64 = Base64.strict_encode64(computed_signature).delete('=')
+      signature = "t=#{timestamp},v2=#{signature_b64}"
 
       event = Authsignal.webhook.construct_event(payload, signature, tolerance)
 
@@ -91,8 +102,19 @@ RSpec.describe Authsignal::Webhook do
       })
 
       tolerance = -1
+      timestamp = Time.now.to_i
 
-      signature = "t=1740016037,v2=t3QXS5VJp03g8Kuh8YoPOSg4hUOR/ChThUm3xd67AoI,v2=oldKeySignature123"
+      # Generate signature dynamically with the current API key
+      hmac_content = "#{timestamp}.#{payload}"
+      computed_signature = OpenSSL::HMAC.digest(
+        OpenSSL::Digest.new('sha256'),
+        api_secret_key,
+        hmac_content
+      )
+      signature_b64 = Base64.strict_encode64(computed_signature).delete('=')
+      
+      # Simulate multiple signatures (current key + old key)
+      signature = "t=#{timestamp},v2=#{signature_b64},v2=oldKeySignature123"
 
       event = Authsignal.webhook.construct_event(payload, signature, tolerance)
 
