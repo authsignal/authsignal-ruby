@@ -3,8 +3,6 @@ require 'json'
 require 'base64'
 
 module Authsignal
-  # Default tolerance (in minutes) for difference between timestamp in signature and current time
-  # This is used to prevent replay attacks
   DEFAULT_TOLERANCE = 5
 
   class Webhook
