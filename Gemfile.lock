@@ -1,7 +1,8 @@
 PATH
   remote: .
   specs:
-    authsignal-ruby (5.1.1)
+    authsignal-ruby (5.2.0)
+      base64
       faraday (>= 2.0.1)
       faraday-retry (~> 2.2)
 
@@ -10,6 +11,7 @@ GEM
   specs:
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
+    base64 (0.2.0)
     bigdecimal (3.1.8)
     crack (1.0.0)
       bigdecimal
