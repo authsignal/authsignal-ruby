@@ -4,11 +4,13 @@ require "authsignal/version"
 require "authsignal/client"
 require "authsignal/configuration"
 require "authsignal/api_error"
+require "authsignal/invalid_signature_error"
+require "authsignal/webhook"
 require "authsignal/middleware/json_response"
 require "authsignal/middleware/json_request"
 
 module Authsignal
-    NON_API_METHODS = [:setup, :configuration, :default_configuration]
+    NON_API_METHODS = [:setup, :configuration, :default_configuration, :webhook]
 
     class << self
         attr_writer :configuration
@@ -23,6 +25,10 @@ module Authsignal
 
         def default_configuration
             configuration.defaults
+        end
+
+        def webhook
+            @webhook ||= Webhook.new(configuration.api_secret_key)
         end
 
         def get_user(user_id:)
