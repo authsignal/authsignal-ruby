@@ -2,7 +2,10 @@
 
 # Authsignal Ruby SDK
 
-The Authsignal Ruby library for server-side applications.
+[![Gem Version](https://img.shields.io/gem/v/authsignal-ruby.svg)](https://rubygems.org/gems/authsignal-ruby)
+[![License](https://img.shields.io/github/license/authsignal/authsignal-ruby.svg)](https://github.com/authsignal/authsignal-ruby/blob/main/LICENSE.txt)
+
+The official Authsignal Ruby library for server-side applications. Use this SDK to easily integrate Authsignal's multi-factor authentication (MFA) and passwordless features into your Ruby backend.
 
 ## Installation
 
@@ -12,48 +15,42 @@ Add this line to your application's Gemfile:
 gem "authsignal-ruby"
 ```
 
+And then execute:
+```bash
+bundle install
+```
+
+Or install it yourself as:
+```bash
+gem install authsignal-ruby
+```
+
+## Getting started
+
+Initialize the Authsignal client with your secret key from the [Authsignal Portal](https://portal.authsignal.com/) and the API URL for your region.
+
+```ruby
+require 'authsignal'
+
+# Initialize the client
+Authsignal.setup do |config|
+  config.api_secret_key = ENV['AUTHSIGNAL_SECRET_KEY']
+  config.api_url = ENV['AUTHSIGNAL_API_URL'] # Use region-specific URL
+end
+```
+
+### API URLs by region
+
+| Region      | API URL                          |
+| ----------- | -------------------------------- |
+| US (Oregon) | https://api.authsignal.com/v1    |
+| AU (Sydney) | https://au.api.authsignal.com/v1 |
+| EU (Dublin) | https://eu.api.authsignal.com/v1 |
+
+## License
+
+This SDK is licensed under the [MIT License](LICENSE.txt).
+
 ## Documentation
 
-Refer to our [SDK documentation](https://docs.authsignal.com/sdks/server/overview) for information on how to use this SDK.
-
-Or check out our [Ruby on Rails Quickstart Guide](https://docs.authsignal.com/integrations/ruby-on-rails).
-
-### Response & Error handling
-
-The Authsignal SDK offers two response formats. By default, its methods return the payload in hash format.
-
-Example:
-
-```ruby
-Authsignal.enroll_verified_authenticator(
-  user_id: 'AS_001',
-  attributes: {
-    verification_method: 'INVALID',
-    email: 'hamish@authsignal.com'
-  }
-)
-
-# returns:
-{
-  "error": "invalid_request",
-  "errorCode": "invalid_request",
-  "errorDescription": "body.verificationMethod must be equal to one of the allowed values - allowedValues: AUTHENTICATOR_APP,EMAIL_MAGIC_LINK,EMAIL_OTP,SMS"
-}
-```
-
-All methods have a bang (!) counterpart that raises an Authsignal::ApiError if the request fails.
-
-Example:
-
-```ruby
-Authsignal.enroll_verified_authenticator!(
-  user_id: 'AS_001',
-  attributes: {
-    verification_method: 'INVALID',
-    email: 'hamish@authsignal.com'
-  }
-)
-
-# raise:
-<Authsignal::ApiError: AuthsignalError: 400 - body.verificationMethod must be equal to one of the allowed values - allowedValues: AUTHENTICATOR_APP,EMAIL_MAGIC_LINK,EMAIL_OTP,SMS.
-```
+For more information and advanced usage examples, refer to the official [Authsignal server-Side SDK documentation](https://docs.authsignal.com/sdks/server/overview).
