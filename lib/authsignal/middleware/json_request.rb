@@ -7,9 +7,7 @@ module Authsignal
         return if env.body.nil?
 
         parsed_body = JSON.parse(env.body)
-        if parsed_body.is_a?(Hash)
-          env.body = camelcase_keys(parsed_body).to_json
-        end
+        env.body = camelcase_keys(parsed_body).to_json if parsed_body.is_a?(Hash)
       rescue JSON::ParserError
         # noop
       end

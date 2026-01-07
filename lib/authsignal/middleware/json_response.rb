@@ -9,7 +9,7 @@ module Authsignal
         # Otherwise, we can safe guard with: env.response_headers['content-type'] =~ /application\/json/
         parsed_body = JSON.parse(env.body)
         if parsed_body.is_a?(Hash)
-          parsed_body.delete("actionCode") # Remove deprecated actionCode from response
+          parsed_body.delete('actionCode') # Remove deprecated actionCode from response
           env.body = transform_to_snake_case(parsed_body)
         end
       rescue JSON::ParserError
@@ -20,9 +20,10 @@ module Authsignal
 
       def underscore(camelcased)
         return camelcased.to_s unless /[A-Z-]|::/.match?(camelcased)
-        word = camelcased.to_s.gsub("::", "/")
-        word.gsub!(/([A-Z])(?=[A-Z][a-z])|([a-z\d])(?=[A-Z])/) { ($1 || $2) << "_" }
-        word.tr!("-", "_")
+
+        word = camelcased.to_s.gsub('::', '/')
+        word.gsub!(/([A-Z])(?=[A-Z][a-z])|([a-z\d])(?=[A-Z])/) { (::Regexp.last_match(1) || ::Regexp.last_match(2)) << '_' }
+        word.tr!('-', '_')
         word.downcase!
         word
       end

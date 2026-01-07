@@ -25,7 +25,7 @@ module Authsignal
     end
 
     def format_description(error_code, error_description)
-      error_description && error_description.length > 0 ? error_description : error_code
+      error_description&.length&.positive? ? error_description : error_code
     end
   end
 end
