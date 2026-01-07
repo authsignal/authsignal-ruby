@@ -52,6 +52,27 @@ module Authsignal
       make_request(:delete, "users/#{url_encode(user_id)}")
     end
 
+    def query_users(
+      username: nil,
+      email: nil,
+      phone_number: nil,
+      token: nil,
+      limit: nil,
+      last_evaluated_user_id: nil
+    )
+      params = {
+        username: username,
+        email: email,
+        phoneNumber: phone_number,
+        token: token,
+        limit: limit&.to_s,
+        lastEvaluatedUserId: last_evaluated_user_id
+      }.compact
+
+      path = params.empty? ? 'users' : "users?#{URI.encode_www_form(params)}"
+      make_request(:get, path)
+    end
+
     def get_authenticators(user_id:)
       make_request(:get, "users/#{url_encode(user_id)}/authenticators")
     end
@@ -79,6 +100,23 @@ module Authsignal
 
     def get_action(user_id:, action:, idempotency_key:)
       make_request(:get, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}")
+    end
+
+    def query_user_actions(
+      user_id:,
+      from_date: nil,
+      action_codes: [],
+      state: nil
+    )
+      params = {
+        fromDate: from_date,
+        codes: action_codes.empty? ? nil : action_codes.join(','),
+        state: state
+      }.compact
+
+      base_path = "users/#{url_encode(user_id)}/actions"
+      path = params.empty? ? base_path : "#{base_path}?#{URI.encode_www_form(params)}"
+      make_request(:get, path)
     end
 
     def update_action(user_id:, action:, idempotency_key:, attributes:)
@@ -163,6 +201,38 @@ module Authsignal
       path = query_string ? "challenges?#{query_string}" : 'challenges'
 
       make_request(:get, path)
+    end
+
+    def create_session(client_id:, token:, action: nil)
+      body = {
+        client_id: client_id,
+        token: token,
+        action: action
+      }.compact
+      make_request(:post, 'sessions', body: body)
+    end
+
+    def validate_session(access_token:, client_ids: nil)
+      body = {
+        access_token: access_token,
+        client_ids: client_ids
+      }.compact
+      make_request(:post, 'sessions/validate', body: body)
+    end
+
+    def refresh_session(refresh_token:)
+      body = { refresh_token: refresh_token }
+      make_request(:post, 'sessions/refresh', body: body)
+    end
+
+    def revoke_session(access_token:)
+      body = { access_token: access_token }
+      make_request(:post, 'sessions/revoke', body: body)
+    end
+
+    def revoke_user_sessions(user_id:)
+      body = { user_id: user_id }
+      make_request(:post, 'sessions/user/revoke', body: body)
     end
 
     ##

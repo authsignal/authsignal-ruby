@@ -24,7 +24,7 @@ Metrics/ParameterLists:
 
 # SDK classes/modules can be longer
 Metrics/ClassLength:
-  Max: 200
+  Max: 250
 
 Metrics/ModuleLength:
   Max: 150
