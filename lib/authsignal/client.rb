@@ -85,6 +85,86 @@ module Authsignal
       make_request(:patch, "users/#{url_encode(user_id)}/actions/#{action}/#{url_encode(idempotency_key)}", body: attributes)
     end
 
+    def challenge(
+      verification_method:,
+      action:,
+      idempotency_key: nil,
+      user_id: nil,
+      email: nil,
+      phone_number: nil,
+      sms_channel: nil,
+      locale: nil,
+      device_id: nil,
+      ip_address: nil,
+      user_agent: nil,
+      custom: nil,
+      scope: nil
+    )
+      body = {
+        verification_method: verification_method,
+        action: action,
+        idempotency_key: idempotency_key,
+        user_id: user_id,
+        email: email,
+        phone_number: phone_number,
+        sms_channel: sms_channel,
+        locale: locale,
+        device_id: device_id,
+        ip_address: ip_address,
+        user_agent: user_agent,
+        custom: custom,
+        scope: scope
+      }
+      make_request(:post, 'challenge', body: body)
+    end
+
+    def verify(challenge_id:, verification_code:)
+      body = {
+        challenge_id: challenge_id,
+        verification_code: verification_code
+      }
+      make_request(:post, 'verify', body: body)
+    end
+
+    def claim_challenge(
+      challenge_id:,
+      user_id:,
+      skip_verification_check: nil,
+      device_id: nil,
+      ip_address: nil,
+      user_agent: nil,
+      custom: nil
+    )
+      body = {
+        challenge_id: challenge_id,
+        user_id: user_id,
+        skip_verification_check: skip_verification_check,
+        device_id: device_id,
+        ip_address: ip_address,
+        user_agent: user_agent,
+        custom: custom
+      }
+      make_request(:post, 'claim', body: body)
+    end
+
+    def get_challenge(
+      challenge_id: nil,
+      user_id: nil,
+      action: nil,
+      verification_method: nil
+    )
+      params = {}
+      params[:challengeId] = challenge_id if challenge_id
+      params[:userId] = user_id if user_id
+      params[:action] = action if action
+      params[:verificationMethod] = verification_method if verification_method
+
+      query_string = URI.encode_www_form(params) unless params.empty?
+      path = query_string ? "challenges?#{query_string}" : 'challenges'
+
+      make_request(:get, path)
+    end
+
     ##
     # TODO: delete identify?
     def identify(user_id, user_payload)
