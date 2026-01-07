@@ -1,0 +1,47 @@
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 2.6
+  SuggestExtensions: false
+  Exclude:
+    - 'vendor/**/*'
+
+# Enforce 2-space indentation
+Layout/IndentationWidth:
+  Width: 2
+
+Layout/LineLength:
+  Max: 150
+
+# Be lenient in specs and gemspec
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - '*.gemspec'
+
+# SDK methods can have more parameters
+Metrics/ParameterLists:
+  Max: 15
+
+# SDK classes can be longer
+Metrics/ClassLength:
+  Max: 150
+
+Metrics/MethodLength:
+  Max: 25
+
+Metrics/AbcSize:
+  Max: 30
+
+# Skip documentation requirement for SDK
+Style/Documentation:
+  Enabled: false
+
+# Gemspec specific
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+Gemspec/RequireMFA:
+  Enabled: false
+
+Gemspec/OrderedDependencies:
+  Enabled: false

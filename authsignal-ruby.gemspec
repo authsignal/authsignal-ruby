@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
-require_relative "lib/authsignal/version"
+require_relative 'lib/authsignal/version'
 
 Gem::Specification.new do |spec|
-  spec.name = "authsignal-ruby"
+  spec.name = 'authsignal-ruby'
   spec.version = Authsignal::VERSION
-  spec.authors = ["justinsoong"]
-  spec.email = ["justin@authsignal.com"]
+  spec.authors = ['justinsoong']
+  spec.email = ['justin@authsignal.com']
 
-  spec.summary = "The Authsignal ruby server side signal API."
-  spec.description = "Authsignal is a passwordless authentication/multifactor authentication with modern factors like passkeys"
-  spec.homepage = "https://github.com/authsignal/authsignal-ruby"
-  spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.summary = 'The Authsignal ruby server side signal API.'
+  spec.description = 'Authsignal is a passwordless authentication/multifactor authentication with modern factors like passkeys'
+  spec.homepage = 'https://github.com/authsignal/authsignal-ruby'
+  spec.license = 'MIT'
+  spec.required_ruby_version = '>= 2.6.0'
 
-  spec.metadata["homepage_uri"] = "https://www.authsignal.com"
-  spec.metadata["source_code_uri"] = spec.homepage
+  spec.metadata['homepage_uri'] = 'https://www.authsignal.com'
+  spec.metadata['source_code_uri'] = spec.homepage
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -24,15 +24,15 @@ Gem::Specification.new do |spec|
       (f == __FILE__) || f.match(%r{\A(?:(?:test|spec|features)/|\.(?:git|travis|circleci)|appveyor)})
     end
   end
-  spec.bindir = "exe"
+  spec.bindir = 'exe'
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
-  spec.require_paths = ["lib"]
+  spec.require_paths = ['lib']
 
-  spec.add_dependency "faraday", ">= 2.0.1"
-  spec.add_dependency "faraday-retry", "~> 2.2"
-  spec.add_dependency "base64"
+  spec.add_dependency 'faraday', '>= 2.0.1'
+  spec.add_dependency 'faraday-retry', '~> 2.2'
+  spec.add_dependency 'base64'
 
-  spec.add_development_dependency "rspec", "~> 3.2"
-  spec.add_development_dependency "rake", "~> 13.0"
-  spec.add_development_dependency "webmock", "~> 3.14"
+  spec.add_development_dependency 'rspec', '~> 3.2'
+  spec.add_development_dependency 'rake', '~> 13.0'
+  spec.add_development_dependency 'webmock', '~> 3.14'
 end

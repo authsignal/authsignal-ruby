@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'openssl'
 require 'json'
 require 'base64'
@@ -6,7 +8,7 @@ module Authsignal
   DEFAULT_TOLERANCE = 5
 
   class Webhook
-    VERSION = "v2"
+    VERSION = 'v2'
 
     attr_reader :api_secret_key
 
@@ -19,8 +21,8 @@ module Authsignal
 
       seconds_since_epoch = Time.now.to_i
 
-      if tolerance > 0 && parsed_signature[:timestamp] < seconds_since_epoch - (tolerance * 60)
-        raise InvalidSignatureError, "Timestamp is outside the tolerance zone."
+      if tolerance.positive? && parsed_signature[:timestamp] < seconds_since_epoch - (tolerance * 60)
+        raise InvalidSignatureError, 'Timestamp is outside the tolerance zone.'
       end
 
       hmac_content = "#{parsed_signature[:timestamp]}.#{payload}"
@@ -41,34 +43,29 @@ module Authsignal
         end
       end
 
-      unless match
-        raise InvalidSignatureError, "Signature mismatch."
-      end
+      raise InvalidSignatureError, 'Signature mismatch.' unless match
 
       JSON.parse(payload, symbolize_names: true)
     end
 
     def parse_signature(value)
-      result = {
-        timestamp: -1,
-        signatures: []
-      }
+      handle_invalid_signature unless value
 
-      return handle_invalid_signature unless value
+      result = extract_signature_parts(value)
+      handle_invalid_signature if result[:timestamp] == -1 || result[:signatures].empty?
+
+      result
+    end
+
+    def extract_signature_parts(value)
+      result = { timestamp: -1, signatures: [] }
 
       value.split(',').each do |item|
-        kv = item.split('=')
-        next unless kv.length == 2
+        key, val = item.split('=')
+        next unless key && val
 
-        if kv[0] == 't'
-          result[:timestamp] = kv[1].to_i
-        elsif kv[0] == VERSION
-          result[:signatures] << kv[1]
-        end
-      end
-
-      if result[:timestamp] == -1 || result[:signatures].empty?
-        handle_invalid_signature
+        result[:timestamp] = val.to_i if key == 't'
+        result[:signatures] << val if key == VERSION
       end
 
       result
@@ -77,7 +74,7 @@ module Authsignal
     private
 
     def handle_invalid_signature
-      raise InvalidSignatureError, "Signature format is invalid."
+      raise InvalidSignatureError, 'Signature format is invalid.'
     end
   end
 end
