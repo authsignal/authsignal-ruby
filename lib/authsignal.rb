@@ -92,6 +92,30 @@ module Authsignal
       handle_response(response)
     end
 
+    def challenge(verification_method:, action:, **options)
+      response = Client.new.challenge(verification_method: verification_method, action: action, **options)
+
+      handle_response(response)
+    end
+
+    def verify(challenge_id:, verification_code:)
+      response = Client.new.verify(challenge_id: challenge_id, verification_code: verification_code)
+
+      handle_response(response)
+    end
+
+    def claim_challenge(challenge_id:, user_id:, **options)
+      response = Client.new.claim_challenge(challenge_id: challenge_id, user_id: user_id, **options)
+
+      handle_response(response)
+    end
+
+    def get_challenge(**options)
+      response = Client.new.get_challenge(**options)
+
+      handle_response(response)
+    end
+
     private
 
     def handle_response(response)
