@@ -88,7 +88,7 @@ module Authsignal
     ##
     # TODO: delete identify?
     def identify(user_id, user_payload)
-      make_request(:post, "users/#{url_encode(user_id)}", body: user_payload)
+        make_request(:post, "users/#{url_encode(user_id)}", body: user_payload)
     end
 
     private
