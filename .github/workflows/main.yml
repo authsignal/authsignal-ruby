@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         ruby:
-          - 3.0.3
+          - '2.6'
     env:
       AUTHSIGNAL_API_URL: ${{ secrets.AUTHSIGNAL_API_URL }}
       AUTHSIGNAL_API_SECRET_KEY: ${{ secrets.AUTHSIGNAL_API_SECRET_KEY }}
