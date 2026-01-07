@@ -10,14 +10,18 @@ jobs:
     environment: main
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Release Gem
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Build gem
+        run: gem build authsignal-ruby.gemspec
+
+      - name: Publish to RubyGems
         if: contains(github.ref, 'refs/tags/')
-        uses: cadwallion/publish-rubygems-action@master
         env:
-          AUTHSIGNAL_API_URL: ${{ secrets.AUTHSIGNAL_API_URL }}
-          AUTHSIGNAL_API_SECRET_KEY: ${{ secrets.AUTHSIGNAL_API_SECRET_KEY }}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          RUBYGEMS_API_KEY: ${{secrets.RUBYGEMS_API_KEY}}
-          RELEASE_COMMAND: bundle exec rake -f RakefileRelease
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+        run: gem push authsignal-ruby-*.gem
