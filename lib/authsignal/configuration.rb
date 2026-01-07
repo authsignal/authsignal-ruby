@@ -2,6 +2,8 @@
 
 module Authsignal
   class Configuration
+    attr_reader :defaults
+
     def self.config_option(name)
       define_method(name) do
         read_value(name)
