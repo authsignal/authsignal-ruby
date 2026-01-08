@@ -8,9 +8,20 @@ on:
   pull_request:
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+          bundler-cache: true
+      - name: Run RuboCop
+        run: bundle exec rubocop
 
+  test:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         ruby:
@@ -19,11 +30,11 @@ jobs:
       AUTHSIGNAL_API_URL: ${{ secrets.AUTHSIGNAL_API_URL }}
       AUTHSIGNAL_API_SECRET_KEY: ${{ secrets.AUTHSIGNAL_API_SECRET_KEY }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler-cache: true
-    - name: Run the default task
-      run: bundle exec rake
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Run tests
+        run: bundle exec rake

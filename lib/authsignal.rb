@@ -39,6 +39,12 @@ module Authsignal
       handle_response(response)
     end
 
+    def query_users(**options)
+      response = Client.new.query_users(**options)
+
+      handle_response(response)
+    end
+
     def update_user(user_id:, attributes:)
       response = Client.new.update_user(user_id: user_id, attributes: attributes)
 
@@ -86,8 +92,68 @@ module Authsignal
       handle_response(response)
     end
 
+    def query_user_actions(user_id:, **options)
+      response = Client.new.query_user_actions(user_id: user_id, **options)
+
+      handle_response(response)
+    end
+
     def update_action(user_id:, action:, idempotency_key:, attributes:)
       response = Client.new.update_action(user_id: user_id, action: action, idempotency_key: idempotency_key, attributes: attributes)
+
+      handle_response(response)
+    end
+
+    def challenge(verification_method:, action:, **options)
+      response = Client.new.challenge(verification_method: verification_method, action: action, **options)
+
+      handle_response(response)
+    end
+
+    def verify(challenge_id:, verification_code:)
+      response = Client.new.verify(challenge_id: challenge_id, verification_code: verification_code)
+
+      handle_response(response)
+    end
+
+    def claim_challenge(challenge_id:, user_id:, **options)
+      response = Client.new.claim_challenge(challenge_id: challenge_id, user_id: user_id, **options)
+
+      handle_response(response)
+    end
+
+    def get_challenge(**options)
+      response = Client.new.get_challenge(**options)
+
+      handle_response(response)
+    end
+
+    def create_session(client_id:, token:, action: nil)
+      response = Client.new.create_session(client_id: client_id, token: token, action: action)
+
+      handle_response(response)
+    end
+
+    def validate_session(access_token:, client_ids: nil)
+      response = Client.new.validate_session(access_token: access_token, client_ids: client_ids)
+
+      handle_response(response)
+    end
+
+    def refresh_session(refresh_token:)
+      response = Client.new.refresh_session(refresh_token: refresh_token)
+
+      handle_response(response)
+    end
+
+    def revoke_session(access_token:)
+      response = Client.new.revoke_session(access_token: access_token)
+
+      handle_response(response)
+    end
+
+    def revoke_user_sessions(user_id:)
+      response = Client.new.revoke_user_sessions(user_id: user_id)
 
       handle_response(response)
     end
