@@ -168,19 +168,11 @@ module Authsignal
       challenge_id:,
       user_id:,
       skip_verification_check: nil,
-      device_id: nil,
-      ip_address: nil,
-      user_agent: nil,
-      custom: nil
     )
       body = {
         challenge_id: challenge_id,
         user_id: user_id,
         skip_verification_check: skip_verification_check,
-        device_id: device_id,
-        ip_address: ip_address,
-        user_agent: user_agent,
-        custom: custom
       }
       make_request(:post, 'claim', body: body)
     end
