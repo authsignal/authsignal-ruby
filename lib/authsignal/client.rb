@@ -167,12 +167,12 @@ module Authsignal
     def claim_challenge(
       challenge_id:,
       user_id:,
-      skip_verification_check: nil,
+      skip_verification_check: nil
     )
       body = {
         challenge_id: challenge_id,
         user_id: user_id,
-        skip_verification_check: skip_verification_check,
+        skip_verification_check: skip_verification_check
       }
       make_request(:post, 'claim', body: body)
     end
