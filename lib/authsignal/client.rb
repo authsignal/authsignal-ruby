@@ -124,7 +124,7 @@ module Authsignal
     end
 
     def challenge(
-      verification_method:,
+      verification_method: nil,
       action: nil,
       challenge_id: nil,
       idempotency_key: nil,
