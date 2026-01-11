@@ -104,8 +104,8 @@ module Authsignal
       handle_response(response)
     end
 
-    def challenge(verification_method:, action:, **options)
-      response = Client.new.challenge(verification_method: verification_method, action: action, **options)
+    def challenge(**options)
+      response = Client.new.challenge(**options)
 
       handle_response(response)
     end

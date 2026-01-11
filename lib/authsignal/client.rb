@@ -124,8 +124,9 @@ module Authsignal
     end
 
     def challenge(
-      verification_method:,
-      action:,
+      verification_method: nil,
+      action: nil,
+      challenge_id: nil,
       idempotency_key: nil,
       user_id: nil,
       email: nil,
@@ -141,6 +142,7 @@ module Authsignal
       body = {
         verification_method: verification_method,
         action: action,
+        challenge_id: challenge_id,
         idempotency_key: idempotency_key,
         user_id: user_id,
         email: email,
