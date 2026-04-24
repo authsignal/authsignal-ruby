@@ -27,10 +27,12 @@ RSpec.describe Authsignal do
         phone_number: '+6427123456'
       }
     )
+    warn "DEBUG enroll_response: #{enroll_response.inspect}"
     expect(enroll_response).not_to be_nil
 
     # Get user
     user_response = described_class.get_user(user_id: user_id)
+    warn "DEBUG user_response: #{user_response.inspect}"
     expect(user_response).not_to be_nil
     expect(user_response[:is_enrolled]).to be true
     expect(user_response[:email]).to be_nil
