@@ -24,7 +24,7 @@ RSpec.describe Authsignal do
       user_id: user_id,
       attributes: {
         verification_method: 'SMS',
-        phone_number: '+6427123456'
+        phone_number: '+64270000000'
       }
     )
     warn "DEBUG enroll_response: #{enroll_response.inspect}"
@@ -78,7 +78,7 @@ RSpec.describe Authsignal do
       user_id: user_id,
       attributes: {
         verification_method: 'SMS',
-        phone_number: '+6427123456'
+        phone_number: '+64270000000'
       }
     )
     expect(enroll_response).not_to be_nil
@@ -112,7 +112,7 @@ RSpec.describe Authsignal do
       user_id: user_id,
       attributes: {
         verification_method: 'SMS',
-        phone_number: '+6427123456'
+        phone_number: '+64270000000'
       }
     )
     expect(enroll_response).not_to be_nil
