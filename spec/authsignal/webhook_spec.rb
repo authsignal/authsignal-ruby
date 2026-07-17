@@ -5,13 +5,10 @@ require 'openssl'
 require 'base64'
 
 RSpec.describe Authsignal::Webhook do
-  let(:api_url) { ENV.fetch('AUTHSIGNAL_API_URL', nil) }
-  let(:api_secret_key) { ENV.fetch('AUTHSIGNAL_API_SECRET_KEY', nil) }
+  let(:api_url) { 'https://api.authsignal.com/v1' }
+  let(:api_secret_key) { 'test-secret-key' }
 
   before do
-    raise 'AUTHSIGNAL_API_URL is undefined in env' unless api_url
-    raise 'AUTHSIGNAL_API_SECRET_KEY is undefined in env' unless api_secret_key
-
     Authsignal.setup do |config|
       config.api_secret_key = api_secret_key
       config.api_url = api_url
@@ -19,6 +16,12 @@ RSpec.describe Authsignal::Webhook do
   end
 
   describe 'webhook verification' do
+    def signature_for(payload, secret, timestamp = Time.now.to_i)
+      hmac_content = "#{timestamp}.#{payload}"
+      computed_signature = OpenSSL::HMAC.digest(OpenSSL::Digest.new('sha256'), secret, hmac_content)
+      "t=#{timestamp},v2=#{Base64.strict_encode64(computed_signature).delete('=')}"
+    end
+
     it 'raises error for invalid signature format' do
       payload = JSON.generate({})
       signature = '123'
@@ -118,6 +121,57 @@ RSpec.describe Authsignal::Webhook do
       event = Authsignal.webhook.construct_event(payload, signature, tolerance)
 
       expect(event).not_to be_nil
+    end
+
+    it 'preserves structured custom variables' do
+      payload = JSON.generate({
+                                version: 1,
+                                id: 'bc1598bc-e5d6-4c69-9afb-1a6fe3469d6e',
+                                source: 'https://authsignal.com',
+                                time: '2025-02-20T01:51:56.070Z',
+                                tenantId: '7752d28e-e627-4b1b-bb81-b45d68d617bc',
+                                type: 'sms.created',
+                                data: {
+                                  actionCode: 'smsVerify',
+                                  customVariables: {
+                                    action_journeyType: 'ForgotChangePassword',
+                                    retryCount: 2,
+                                    isRecovery: true,
+                                    channels: %w[sms email]
+                                  }
+                                }
+                              })
+
+      event = Authsignal.webhook.construct_event(payload, signature_for(payload, api_secret_key))
+
+      expect(event[:data][:customVariables]).to eq({
+                                                     action_journeyType: 'ForgotChangePassword',
+                                                     retryCount: 2,
+                                                     isRecovery: true,
+                                                     channels: %w[sms email]
+                                                   })
+    end
+
+    it 'preserves log event batches' do
+      payload = JSON.generate({
+                                records: [{
+                                  version: 1,
+                                  id: 'bc1598bc-e5d6-4c69-9afb-1a6fe3469d6e',
+                                  source: 'https://authsignal.com',
+                                  time: '2025-02-20T01:51:56.070Z',
+                                  tenantId: '7752d28e-e627-4b1b-bb81-b45d68d617bc',
+                                  type: 'action.log_created',
+                                  record: {
+                                    userId: 'b9f74d36-fcfc-4efc-87f1-3664ab5a7fb0',
+                                    customVariables: { journeyType: 'accountRecovery' }
+                                  }
+                                }]
+                              })
+
+      batch = Authsignal.webhook.construct_event(payload, signature_for(payload, api_secret_key))
+
+      expect(batch[:records].length).to eq(1)
+      expect(batch[:records][0][:record][:customVariables][:journeyType]).to eq('accountRecovery')
     end
   end
 end
