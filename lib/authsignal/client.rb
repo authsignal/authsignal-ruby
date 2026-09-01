@@ -1,42 +1,35 @@
 # frozen_string_literal: true
 
 require 'erb'
+require 'json'
 
 module Authsignal
   class Client
     USER_AGENT = 'authsignal-ruby'
     NO_API_KEY_MESSAGE = 'No Authsignal API Secret Key Set'
 
+    SAFE_HTTP_METHODS = %i[get head options].freeze
+    RETRYABLE_STATUSES = ([429] + (500..599).to_a).freeze
     RETRY_OPTIONS = {
-      max: 3,
       interval: 0.1,
       interval_randomness: 0.5,
-      backoff_factor: 2
+      backoff_factor: 2,
+      methods: SAFE_HTTP_METHODS,
+      exceptions: Faraday::Retry::Middleware::DEFAULT_EXCEPTIONS + [Faraday::ConnectionFailed],
+      retry_statuses: RETRYABLE_STATUSES,
+      retry_if: lambda do |env, _exception|
+        idempotency_key = env.request_headers['Idempotency-Key']
+        action_update = env.method == :patch && env.url.path.match?(%r{/actions/[^/]+/[^/]+$})
+
+        !idempotency_key.to_s.empty? || action_update
+      end
     }.freeze
     private_constant :RETRY_OPTIONS
 
-    def initialize(retry_options: RETRY_OPTIONS)
+    def initialize(retry_options: nil)
       @api_key = require_api_key
-
-      @client = Faraday.new do |builder|
-        builder.url_prefix = Authsignal.configuration.api_url
-        builder.adapter :net_http
-        builder.request :authorization, :basic, @api_key, nil
-
-        builder.headers['Accept'] = 'application/json'
-        builder.headers['Content-Type'] = 'application/json'
-        builder.headers['User-Agent'] = USER_AGENT
-        builder.headers['X-Authsignal-Version'] = Authsignal::VERSION
-
-        builder.request :json
-        builder.response :json, parser_options: { symbolize_names: true }
-
-        builder.use Middleware::JsonRequest
-        builder.use Middleware::JsonResponse
-
-        builder.request :retry, retry_options if Authsignal.configuration.retry
-        builder.response :logger, ::Logger.new($stdout), bodies: true if Authsignal.configuration.debug
-      end
+      retry_options ||= RETRY_OPTIONS.merge(max: Authsignal.configuration.retries)
+      @client = build_client(retry_options)
     end
 
     def get_user(user_id:)
@@ -237,6 +230,38 @@ module Authsignal
 
     private
 
+    def build_client(retry_options)
+      Faraday.new do |builder|
+        configure_transport(builder)
+        configure_headers(builder)
+        configure_middleware(builder, retry_options)
+      end
+    end
+
+    def configure_transport(builder)
+      builder.url_prefix = Authsignal.configuration.api_url
+      builder.adapter :net_http
+      builder.options.open_timeout = Authsignal.configuration.open_timeout
+      builder.options.timeout = Authsignal.configuration.timeout
+      builder.request :authorization, :basic, @api_key, nil
+    end
+
+    def configure_headers(builder)
+      builder.headers['Accept'] = 'application/json'
+      builder.headers['Content-Type'] = 'application/json'
+      builder.headers['User-Agent'] = USER_AGENT
+      builder.headers['X-Authsignal-Version'] = Authsignal::VERSION
+    end
+
+    def configure_middleware(builder, retry_options)
+      builder.request :json
+      builder.response :json, parser_options: { symbolize_names: true }
+      builder.use Middleware::JsonRequest
+      builder.use Middleware::JsonResponse
+      builder.request :retry, retry_options if Authsignal.configuration.retry
+      builder.response :logger, ::Logger.new($stdout), bodies: true if Authsignal.configuration.debug
+    end
+
     def url_encode(str)
       ERB::Util.url_encode(str)
     end
@@ -255,6 +280,8 @@ module Authsignal
 
     def make_request(method, path, body: nil, headers: nil)
       body = body.compact if body.is_a?(Hash)
+      idempotency_key = body.is_a?(Hash) && body[:idempotency_key]
+      headers = (headers || {}).merge('Idempotency-Key' => idempotency_key) if idempotency_key
       @client.public_send(method, path, body, headers)
     end
   end

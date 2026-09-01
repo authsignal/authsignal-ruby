@@ -18,6 +18,9 @@ module Authsignal
     config_option :api_url
     config_option :debug
     config_option :retry
+    config_option :retries
+    config_option :open_timeout
+    config_option :timeout
 
     def initialize
       @config_values = {}
@@ -25,7 +28,10 @@ module Authsignal
       # set default attribute values
       @defaults = {
         api_url: 'https://signal.authsignal.com/v1/',
-        retry: false,
+        retry: true,
+        retries: 2,
+        open_timeout: 3,
+        timeout: 10,
         debug: false
       }
     end
