@@ -39,19 +39,6 @@ Authsignal.setup do |config|
 end
 ```
 
-### Retry policy
-
-Requests use a 3-second connect timeout, 10-second read timeout, and retry twice by default with exponential backoff and jitter. Transient network failures, `429`, and `5xx` responses are retried for `GET`, `HEAD`, and `OPTIONS`; writes are retried only when they carry an idempotency key.
-
-```ruby
-Authsignal.setup do |config|
-  config.retry = false # Disable retries
-  config.retries = 2
-  config.open_timeout = 3
-  config.timeout = 10
-end
-```
-
 ### API URLs by region
 
 | Region      | API URL                          |
