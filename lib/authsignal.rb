@@ -33,6 +33,14 @@ module Authsignal
       @webhook ||= Webhook.new(configuration.api_secret_key)
     end
 
+    def start_flow(**options)
+      handle_response(Client.new.start_flow(**options))
+    end
+
+    def verify_flow(action_code:, challenge_token:)
+      handle_response(Client.new.verify_flow(action_code: action_code, challenge_token: challenge_token))
+    end
+
     def get_user(user_id:)
       response = Client.new.get_user(user_id: user_id)
 

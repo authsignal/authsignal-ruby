@@ -39,6 +39,16 @@ module Authsignal
       end
     end
 
+    def start_flow(action_code:, user: nil, attributes: nil, redirect_url: nil, client_id: nil)
+      body = { action_code: action_code, user: camelcase_keys(user), attributes: camelcase_keys(attributes),
+               redirect_url: redirect_url, client_id: client_id }
+      make_request(:post, 'flows', body: body)
+    end
+
+    def verify_flow(action_code:, challenge_token:)
+      make_request(:post, 'flows/verify', body: { action_code: action_code, challenge_token: challenge_token })
+    end
+
     def get_user(user_id:)
       path = "users/#{url_encode(user_id)}"
       make_request(:get, path)
@@ -236,6 +246,10 @@ module Authsignal
     end
 
     private
+
+    def camelcase_keys(hash)
+      hash&.transform_keys { |key| key.to_s.gsub(/_([a-z])/) { Regexp.last_match(1).upcase } }
+    end
 
     def url_encode(str)
       ERB::Util.url_encode(str)
